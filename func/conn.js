@@ -10,6 +10,6 @@
     if(global._local)
         exports.db = mongo.db('mongodb://localhost/catchqq');
     else
-        exports.db = mongo.db('mongodb://admin:123456@ds033087.mongolab.com:33087/catchqq');
+        exports.db = mongo.db('mongodb://admin:123456@ds049898.mongolab.com:49898/catchqq');
     //mongodb://<dbuser>:<dbpassword>@ds033087.mongolab.com:33087/atong
 })();
