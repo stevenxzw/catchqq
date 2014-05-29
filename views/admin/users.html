@@ -1,0 +1,35 @@
+
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <h3 class="panel-title">用户列表  用户总数：{{length}}</h3>
+    </div>
+    <div class="panel-body"  ng-controller="usersControl" >
+        <div class="list-group"  selector="div" ngd-click="itemClick($event)">
+            <div class="list-group-item">
+                <div>#index</div>
+                <div>faceImg</div>
+                <div>uid</div>
+                <div>likename</div>
+                <div>登录次数</div>
+                <div>最后登录</div>
+                <div>操作</div>
+            </div>
+            <div ng-repeat="user in users" class="list-group-item" rel="uid:<% user.uid%>,ln:<% user.likename%>">
+                <div><%$index+1%></div>
+                <div><% user.faceImg|vNull  %></div>
+                <div><% user.uid%></div>
+                <div><% user.likename%></div>
+                <div><% user.logTimes%></div>
+                <div><% user.lastTime| date : 'yyyy-MM-dd'%></div>
+                <div class="car-change"><a href="#" rel="e:edit" class="edit">修改</a><span>删除</span></div>
+            </div>
+        </div>
+    </div>
+
+
+
+</div>
+
+<script>
+    var users = JSON.parse('{{{json users}}}');
+</script>
