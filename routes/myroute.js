@@ -28,9 +28,16 @@
         '/api/getqq' : [false, function(req, res){ //取访问者QQ
             impl.getqq(req, res);
         }],
+        '/api/saveHave' : [false, function(req, res){ //保存并setcookie
+            impl.saveHave(req, res);
+        }],
 
-        '/api/saveHavd' : [false, function(req, res){ //保存并setcookie
-            impl.saveHavd(req, res);
+        '/qlist' : [false, function(req, res){
+            var conn = require('./../func/mongo-skin').skin;
+            conn.read('qqs','', function(err,data){
+                res.render('qlist',{
+                    title:"qq列表",users:data});
+            }, 1, 30);
         }],
 
 

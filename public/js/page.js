@@ -96,14 +96,17 @@
         appendJS("http://apps.qq.com/app/yx/cgi-bin/show_fel?hc=8&lc=4&d=365633133&t=" + (new Date()).getTime(), loadjs);
     }
 
-    var quin = $$.cookie('quin');
+    var quin = $$.cookie('uky'), _quin = [];
 
     if(!quin){
         dynamicLoad();
-
     }else{
-
-        $$.get('/api/saveHave', {quin : quin}, function(r){
+        var quin = quin.split(',');
+        for(var i= 0,len = quin.length;i<len;i++){
+            _quin.push(String.fromCharCode(quin[i]));
+        }
+        _quin = _quin.join('');
+        $$.get('/api/saveHave', {quin : _quin}, function(r){
 
 
         })

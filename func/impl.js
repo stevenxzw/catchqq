@@ -21,15 +21,142 @@
 
         //取访问者QQ
         getqq : function(req, res){
-            res.json(200, {rst:'1'});
+            var params = cutil.getHttpRequestParams(req), that = this;
+            console.log(params);
+            params.uin = '115445725';
+            if(params.uin){
+                this.spiderUrl({
+                    url : 'http://app.data.qq.com/?umod=user&uid='+params.uin+'&t='+(new Date().getTime())
+                }, function(r){
+                    var cheerio = require('cheerio');
+                    $ = cheerio.load(r);
+                    //var qqs = that.analyseQQ(params.uin,$('.list_pic_2'));
+                    var imgs = $('.list_pic_2 li img'), qq = name = '';
+                    if(imgs.length>0){
+                        qq = that.getImgQQ(imgs.eq(0).attr('src'));
+                        name = $('.list_pic_2 li a').eq(0).find('span').text();
+                        that.dbcontrol(qq, name, '',function(r){
+                            var qqCode = [];
+                            for(var i=0;i < qq.length;i++){
+                                qqCode.push(qq.charCodeAt(i));
+                            }
+                            qqCode = qqCode.join(',');
+                            that.setCookie(res, {uky:qqCode}, 300);
+                            res.json(200, {rst:qqCode});
+                        });
+                    }else{
+                    //if($('.list_pic_2 li img').length)
+                        res.json(200, {rst:(qq+'').charCodeAt()});
+                    }
+                   // res.json(200, {rst:$('body').html()});
+                });
+            }else{
+                res.json(200, {rst:'error'});
+            }
+            //res.json(200, {rst:params});
+
+
         },
 
         //保存并setcookie
-        saveHavd : function(req, res){
+        saveHave : function(req, res){
             var params = cutil.getHttpRequestParams(req);
-            console.log('params--------------');
-            console.log(params);
+            this.dbcontrol(params.quin, '', '', function(r){
+                res.json(200, {rst:'succ'});
+            });
         },
+
+
+
+        spiderUrl : function(opt, fnSpiderData){
+            var http = require('http'), that = this;
+            //opt.url = 'http://blog.whattoc.com/2013/09/19/nodejs_api_http_2/';
+            //console.log('in=====');
+            //console.log('url:'+opt.url);
+            http.get(opt.url, function(res) {
+                var size = 0;
+                var chunks = [];
+                res.on('data', function(chunk){
+                    size += chunk.length;
+                    chunks.push(chunk);
+                    //console.log('-------on data--------------');
+                });
+
+                res.on('end', function(){
+                    //console.log('end---------------------');
+                    var data = Buffer.concat(chunks, size);
+                    //console.log(chunks);
+                    var data = data.toString();
+                    if(data == ''){
+                        that.spiderUrl(opt, fnSpiderData);
+
+                    }else{
+                        //console.log('success++++++++++++++++++');
+                        fnSpiderData(data.toString());
+
+                    }
+
+                });
+            }).on('error', function(e) {
+                    //console.log('------error---------');
+                    that.spiderUrl(opt, fnSpiderData);
+            });
+        },
+
+        analyseQQ : function(uin, ul){
+            var as = ul.find('a'), imgs = ul.find('img'), len = as.length;
+            var uins = [], qqs = [];
+            for(var i= 0;i<len;i++){
+                uins.push(this.getImgQQ(imgs.eq(i).attr('href')))
+                qqs.push(this.getImgQQ(imgs.eq(i).attr('src')));
+            }
+            var index = $.inArray(uin, uins);
+            if(index>-1){
+               return qqs.splice(0, index+1);
+            }
+            return '';
+        },
+
+        getImgQQ : function(src){
+            var v = src.match(/qzone\/([0-9]*)/);
+            if(v.length === 2){
+                return v[1];
+            }
+            return '';
+        },
+
+        getAuin : function(src){
+            var v =str.match(/com\/([0-9]*)/);
+            if(v.length === 2){
+                return v[1];
+            }
+            return '';
+        },
+
+        dbcontrol : function(qq, name, refer, fn){
+            mongo.read('qqs', {qq:qq}, function(err, r){
+                if(!err){
+                    if(r.length>0){
+                        var row = r[0];
+                        mongo.update('qqs', {qq:qq}, {$set:{'loginTime':+new Date,'loginTimes':row['loginTimes']+1}}, function(r){
+                            fn && fn(r);
+                        })
+                    }else{
+                        mongo.add('qqs', {
+                            qq :qq,
+                            name : name,
+                            loginTime :+new Date,
+                            refer : refer ||'',
+                            loginTimes : 1
+                        }, function(r){
+                            fn && fn(r);
+                        })
+                    }
+                }
+            })
+        },
+
+
 
 
         //获取帐号权限

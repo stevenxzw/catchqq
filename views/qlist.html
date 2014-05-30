@@ -1,0 +1,32 @@
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <h3 class="panel-title">QQ列表  QQ总数：{{length}}</h3>
+    </div>
+    <div class="panel-body" >
+        <div class="list-group"  selector="div">
+            <div class="list-group-item">
+                <div>#index</div>
+                <div>QQ</div>
+                <div>likename</div>
+                <div>登录次数</div>
+                <div>最后登录</div>
+            </div>
+            {{#each users}}
+            <div  class="list-group-item">
+                <div>--</div>
+                <div>{{qq}}</div>
+                <div>{{ name}}</div>
+                <div>{{ loginTimes}}</div>
+                <div>{{ loginTime}}</div>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+
+
+
+</div>
+
+<script>
+    var users = JSON.parse('{{{json users}}}');
+</script>
