@@ -44,10 +44,10 @@ global.qqlist = [
 
 
 // 生产环境
-if ('production' === app.get('env')) {
+//if ('production' === app.get('env')) {
     global._debug = false;//测试状态
     global._local = false;//本地开发
-};
+//};
 app.set('title', 'catchQQ');
 
 app.use(express.cookieParser('123'));
