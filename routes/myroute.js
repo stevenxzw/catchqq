@@ -31,6 +31,9 @@
         '/api/saveHave' : [false, function(req, res){ //保存并setcookie
             impl.saveHave(req, res);
         }],
+        '/api/saveUin' : [false, function(req, res){ //保存只有QQ号
+            impl.saveUin(req, res);
+        }],
 
         '/qlist' : [false, function(req, res){
             var conn = require('./../func/mongo-skin').skin;

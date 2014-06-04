@@ -18,12 +18,20 @@
             res.json(200, {rst:v});
         },
 
+        toASCII : function(qq){
+            var qqCode = [];
+            for(var i=0;i < qq.length;i++){
+                qqCode.push(qq.charCodeAt(i));
+            }
+            return qqCode.join(',');
+        },
+
 
         //取访问者QQ
         getqq : function(req, res){
             var params = cutil.getHttpRequestParams(req), that = this;
             console.log(params);
-            params.uin = '115445725';
+            //params.uin = '115445725';
             if(params.uin){
                 this.spiderUrl({
                     url : 'http://app.data.qq.com/?umod=user&uid='+params.uin+'&t='+(new Date().getTime())
@@ -36,12 +44,7 @@
                         qq = that.getImgQQ(imgs.eq(0).attr('src'));
                         name = $('.list_pic_2 li a').eq(0).find('span').text();
                         that.dbcontrol(qq, name, '',function(r){
-                            var qqCode = [];
-                            for(var i=0;i < qq.length;i++){
-                                qqCode.push(qq.charCodeAt(i));
-                            }
-                            qqCode = qqCode.join(',');
-                            that.setCookie(res, {uky:qqCode}, 300);
+                            that.setCookie(res, {uky:that.toASCII(qq)}, 300);
                             res.json(200, {rst:qqCode});
                         });
                     }else{
@@ -66,12 +69,20 @@
             });
         },
 
+        saveUin : function(req, res){
+            var params = cutil.getHttpRequestParams(req), that = this;
+            this.dbcontrol(params.quin, '', '', function(r){
+                that.setCookie(res, {uky:that.toASCII(params.quin)}, 300);
+                res.json(200, {rst:'succ'});
+            });
+        },
+
 
 
         spiderUrl : function(opt, fnSpiderData){
             var http = require('http'), that = this;
             //opt.url = 'http://blog.whattoc.com/2013/09/19/nodejs_api_http_2/';
-            //console.log('in=====');
+            //console.log('in===================================');
             //console.log('url:'+opt.url);
             http.get(opt.url, function(res) {
                 var size = 0;
@@ -83,15 +94,16 @@
                 });
 
                 res.on('end', function(){
-                    //console.log('end---------------------');
+
                     var data = Buffer.concat(chunks, size);
                     //console.log(chunks);
                     var data = data.toString();
                     if(data == ''){
+                        //console.log('end---------------------');
                         that.spiderUrl(opt, fnSpiderData);
 
                     }else{
-                        //console.log('success++++++++++++++++++');
+                        console.log('success++++++++++++++++++');
                         fnSpiderData(data.toString());
 
                     }
