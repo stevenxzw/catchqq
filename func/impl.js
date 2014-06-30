@@ -9,6 +9,8 @@
         _debug = global._debug,
         qqlist = global.qqlist;
 
+    var xmlreader = require('xmlreader');
+
     var mostTimer = 50, thtimer = 0;
     exports.Impl = {
 
@@ -58,12 +60,59 @@
 
 
         getAreaByQQ : function(param, res){
-
-            mongo.count('blogqq', '', function(err, rel){
+            var that = this;
+            mongo.count('blogqq', {"area":""}, function(err, rel){
                 mongo.read('blogqq',{"area":""}, function(err,data){
-                    res.json(200, {rst:data});
+                    that.getAreaByQQImpl(data, function(){
+                         //res.json(200, {rst:"success"});
+                         res.send('<div>获取完成</div>');
+                    });
+                    //res.json(200, {rst:data});
                 }, 1, rel);
             })
+
+        },
+
+        getAreaByQQImpl : function(lists, fun){
+            if(lists.length>0){
+                var item = lists.shift(), that = this, qq = item['qq'];
+                var nodegrass = require('nodegrass');
+                //nodegrass.get("http://183.60.15.179/cgi-bin/user/cgi_personal_card?uin=79186391&_=1397912308807",function(data,status,headers){
+                nodegrass.get("http://qq.ico.la/api/qq="+qq+"&format=xml",function(data,status,headers){
+                    console.log(data);
+                    //console.log(typeof data);
+                    xmlreader.read('<response>'+data+'</response>', function(errors, response){
+                        if(null !== errors ){
+                            console.log(errors);
+                            that.getAreaByQQImpl(lists, fun);
+                            return;
+                        }
+
+                        if( response.response.country){
+                            var country =  response.response.country.text(),
+                                state =  response.response.state.text(),
+                                city =  response.response.city.text();
+                            if(city || country || state){
+                                if(city === ''|| city ==='未知' || city === '-'){
+                                    city = country+' '+state;
+                                }
+
+                            }
+                        }else{
+
+                            var city = '未知';
+                        }
+
+                        mongo.update('blogqq', {qq:qq}, {$set:{'area':city}}, function(r){
+                            that.getAreaByQQImpl(lists, fun);
+                        })
+                    });
+                },'utf8').on('error', function(e) {
+                        console.log("Got error: " + e.message);
+                    });
+            }else{
+                fun &fun();
+            }
 
         },
 

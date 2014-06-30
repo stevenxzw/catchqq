@@ -83,6 +83,11 @@
             impl.getAreaByQQ(param, res);
         },
 
+        '/getAreaByQQImpl': function(req, res){
+            var param = cutil.getHttpRequestParams(req);
+            impl.getAreaByQQImpl([{id:154036777}], res);
+        },
+
         /*----------------------初始化数据-------------------------*/
         '/init/tables' : [false, function(req, res){
             initClass.initTables(req, res);

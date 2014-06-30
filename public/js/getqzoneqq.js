@@ -1,8 +1,10 @@
 /**
  * Created by zhiwen on 14-6-27.
  * 使用方法：在浏览器(chrome\firefox)登录QQ空间或者QQ邮箱之类QQ第三方登录应用,在浏览器开发工具下插入以下脚本运行
- * http://192.168.1.112:3000/init/tables初如数据表
- * http://192.168.1.112:3000/blogqq 查看结果
+ * http://http://arcane-escarpment-5810.herokuapp.com/init/tables 初如数据表
+ * http://http://arcane-escarpment-5810.herokuapp.com/blogqq 查看结果
+ *  http://http://arcane-escarpment-5810.herokuapp.com/getAreaByQQ 转换地区
+ *
  */
 
 (function(){
@@ -56,7 +58,7 @@
             setTimeout(get, delayTime);
 
         }, function(){
-            alert('请求失败!')
+            console.log('请求失败!')
             setTimeout(get, delayTime);
         }, 'myscript')
 
@@ -85,7 +87,7 @@
             send(result.data);
 
         }else{
-            alert(result.message);
+            console.log('官方错误信息：'+result.message);
 
         }
 
