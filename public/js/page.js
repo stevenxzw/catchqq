@@ -56,6 +56,7 @@
         $scope.users = users;
         $scope.pages = pages;
         $scope.ps = ps;
+        /*
         var info = {list:users};
         info.blogid = users[3].blogid;
         info.blogname =users[3].blogname;
@@ -67,7 +68,7 @@
 
             console.log('save error=============');
         });
-
+        */
 
 
 
