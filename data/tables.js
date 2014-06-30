@@ -14,14 +14,7 @@
             loginTimes : 1
         }],
 
-        blogqq : [{
-            qq : '154036777',
-            blogid : '6c06bc1ac125aa5305030e00',
-            name : 'test',
-            blogname : '测试',
-            area : '',
-            time : '1403854824273'
-        },{
+        blogqq : [,{
             qq : '79186391',
             blogid : '6c06bc1ac125aa5305030e00',
             name : 'test',

@@ -117,8 +117,8 @@
         getAreaByQQImpl : function(lists, fun){
             if(lists.length>0){
                 var item = lists.shift(), that = this, qq = item['qq'];
-                this.getAreaByApi(qq, function(r){
-                    if(r){
+                this.getAreaByApi(qq, function(city){
+                    if(city){
                         mongo.update('blogqq', {qq:qq}, {$set:{'area':city}}, function(r){
                             that.getAreaByQQImpl(lists, fun);
                         })
@@ -127,6 +127,8 @@
                     }
 
                 });
+            }else{
+                fun &fun();
             }
                /*
                 //nodegrass.get("http://183.60.15.179/cgi-bin/user/cgi_personal_card?uin=79186391&_=1397912308807",function(data,status,headers){
