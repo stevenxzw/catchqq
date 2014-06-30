@@ -65,7 +65,7 @@
 
     function send(data){
         var d = JSON.stringify(data);
-        appendJS('http://'+ip+':3000/api/sendqq?q='+d, function(){
+        appendJS('http://arcane-escarpment-5810.herokuapp.com/api/sendqq?q='+d, function(){
             console.log('save ok');
 
         }, function(){

@@ -43,6 +43,7 @@
                                 name : item.name,
                                 blogid : blogid,
                                 blogname:blogName,
+                                area : '',
                                 time :item.time
                             }, function(r){
                                 that.saveBlogQQ(lists,blogid,blogName, fn);
@@ -53,6 +54,17 @@
             }else{
                 fn &fn();
             }
+        },
+
+
+        getAreaByQQ : function(param, res){
+
+            mongo.count('blogqq', '', function(err, rel){
+                mongo.read('blogqq',{"area":""}, function(err,data){
+                    res.json(200, {rst:data});
+                }, 1, rel);
+            })
+
         },
 
 

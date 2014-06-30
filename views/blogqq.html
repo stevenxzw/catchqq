@@ -13,7 +13,7 @@
                 <div>likename</div>
                 <div>时间</div>
                 <div>文章名称</div>
-                <div>blogid</div>
+                <div>地区</div>
             </div>
             <div  class="list-group-item" ng-repeat="user in users">
                 <div><% $index+1%></div>
@@ -21,7 +21,7 @@
                 <div title="<% user.name%>"><% user.name|stringLen%></div>
                 <div><% user.time| time : 'yyyy-MM-dd'%></div>
                 <div><% user.blogname%></div>
-                <div><% user.blogid %></div>
+                <div><% user.area %></div>
             </div>
         </div>
 
