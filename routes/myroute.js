@@ -88,6 +88,10 @@
             impl.getAreaByQQImpl([{id:154036777}], res);
         },
 
+        '/getAreaByQQMx': function(req, res){
+            impl.getAreaByQQMx( res);
+        },
+
         /*----------------------初始化数据-------------------------*/
         '/init/tables' : [false, function(req, res){
             initClass.initTables(req, res);

@@ -40,18 +40,18 @@
                             console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<---重复------------------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
                             that.saveBlogQQ(lists,blogid,blogName, fn);
                         }else{
-                            that.getAreaByApi(item.uin, function(result){
+                            //that.getAreaByApi(item.uin, function(result){
                                 mongo.add('blogqq', {
                                     qq :item.uin||item.qq,
                                     name : item.name,
                                     blogid : blogid,
                                     blogname:blogName,
-                                    area : result,
+                                    area : '',
                                     time :item.time
                                 }, function(r){
                                     that.saveBlogQQ(lists,blogid,blogName, fn);
                                 })
-                            })
+                            //})
 
                         }
                     }
@@ -64,9 +64,7 @@
 
         getAreaByQQ : function(param, res){
             var that = this;
-
-
-                mongo.read('blogqq',{"area":""}, function(err,data){
+                mongo.read('blogqq',{ "area":""}, function(err,data){
                     if(!err){
                         if(data.length == 0){
                             res.send('<div>没有可转换数据</div>');
@@ -81,6 +79,23 @@
                     //res.json(200, {rst:data});
                 });
 
+        },
+
+        getAreaByQQMx : function(res){
+            var that = this;
+            mongo.read('blogqq',{ "area":"未知"}, function(err,data){
+                if(!err){
+                    if(data.length == 0){
+                        res.send('<div>没有可转换数据</div>');
+
+                    }else{
+                        that.getAreaByQQImpl(data, function(){
+                            res.send('<div>获取完成</div>');
+                        });
+                    }
+                }
+                //res.json(200, {rst:data});
+            });
         },
 
         getAreaByApi : function(qq, fn){
