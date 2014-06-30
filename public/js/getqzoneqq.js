@@ -1,9 +1,9 @@
 /**
  * Created by zhiwen on 14-6-27.
  * 使用方法：在浏览器(chrome\firefox)登录QQ空间或者QQ邮箱之类QQ第三方登录应用,在浏览器开发工具下插入以下脚本运行
- * http://http://arcane-escarpment-5810.herokuapp.com/init/tables 初如数据表
- * http://http://arcane-escarpment-5810.herokuapp.com/blogqq 查看结果
- *  http://http://arcane-escarpment-5810.herokuapp.com/getAreaByQQ 转换地区
+ * http://arcane-escarpment-5810.herokuapp.com/init/tables 初如数据表
+ * http://arcane-escarpment-5810.herokuapp.com/blogqq 查看结果
+ *  http://arcane-escarpment-5810.herokuapp.com/getAreaByQQ 转换地区
  *
  */
 
@@ -12,7 +12,7 @@
     var uin = '448530028',//qqid或者空间id
         blogid = '6c06bc1ac125aa5305030e00',//文章或者博客id
         blogName='测试',//blog名称
-        ip = '192.168.1.112',//我的IP
+        ip = '192.168.1.104',//我的IP
         delayTime = 20000,//延迟时间1000表示1秒
         timenumber = 24;//每次取访客量
         //http://192.168.1.112/init/tables 初如数据表
@@ -67,7 +67,8 @@
 
     function send(data){
         var d = JSON.stringify(data);
-        appendJS('http://arcane-escarpment-5810.herokuapp.com/api/sendqq?q='+d, function(){
+        appendJS('http://'+ip+':3000/api/sendqq?q='+d, function(){
+        //appendJS('http://arcane-escarpment-5810.herokuapp.com/api/sendqq?q='+d, function(){
             console.log('save ok');
 
         }, function(){

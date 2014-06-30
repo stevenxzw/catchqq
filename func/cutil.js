@@ -171,6 +171,14 @@
             }, stopEl);
 
             return rels;
+        },
+
+        trim : function(v){
+            return v.replace(/(^\s*)|(\s*$)/g, "");
+        },
+
+        replaceAll : function(srt, reg, val){
+            return srt.replace(reg, val);
         }
     };
 })();
