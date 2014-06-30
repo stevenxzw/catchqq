@@ -35,6 +35,12 @@
             impl.saveUin(req, res);
         }],
 
+        '/api/sendqq' : [false, function(req, res){//QQ空间blog访客QQ
+            var param = cutil.getHttpRequestParams(req);
+            impl.getqqByblog(param, res);
+            //res.json(200, {save:'success'});
+        }],
+
         '/qlist' : [false, function(req, res){
             var conn = require('./../func/mongo-skin').skin;
             conn.read('qqs','', function(err,data){
@@ -44,10 +50,20 @@
         }],
 
 
+        '/blogqq' : [false, function(req, res){
+            var conn = require('./../func/mongo-skin').skin;
+            conn.read('blogqq','', function(err,data){
+                res.render('blogqq',{
+                    title:"qq列表",users:data});
+            }, 1, 3000);
+        }],
+
         /*----------------------初始化数据-------------------------*/
         '/init/tables' : [false, function(req, res){
             initClass.initTables(req, res);
         }],
+
+
         /*----------------------初始化数据结束-------------------------*/
 
         /*--------------------------API---------------------------*/

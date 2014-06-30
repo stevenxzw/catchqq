@@ -8,13 +8,60 @@
         cutil = require('./../func/cutil').util,
         _debug = global._debug,
         qqlist = global.qqlist;
+
+    var mostTimer = 50, thtimer = 0;
     exports.Impl = {
+
+        getqqByblog : function(param, res){
+
+            var info = JSON.parse(param.q);
+            if(info.list){
+                this.saveBlogQQ(info.list,info.blogid,info.blogName, function(){
+                    res.json(200, {save:'success'});
+                });
+            }else{
+                res.json(200, {save:'error'});
+            }
+        },
+
+        saveBlogQQ : function(lists, blogid,blogName, fn){
+            if(lists.length>0){
+                var item = lists.shift(), that = this;
+                mongo.read('blogqq', {qq:item.uin}, function(err, r){
+                    if(!err){
+                        if(r.length>0){
+                            //var row = r[0];
+                            //mongo.update('qqs', {qq:item.uin}, {$set:{'loginTime':+new Date,'loginTimes':row['loginTimes']+1}}, function(r){
+                            //    fn && fn(r);
+                            //})
+                            //res.json(200, )
+                            console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<---重复------------------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+                            that.saveBlogQQ(lists,blogid,blogName, fn);
+                        }else{
+                            mongo.add('blogqq', {
+                                qq :item.uin,
+                                name : item.name,
+                                blogid : blogid,
+                                blogname:blogName,
+                                time :item.time
+                            }, function(r){
+                                that.saveBlogQQ(lists,blogid,blogName, fn);
+                            })
+                        }
+                    }
+                })
+            }else{
+                fn &fn();
+            }
+        },
+
+
         //分配uid
         getUin : function(req, res){
             var v = qqlist.shift();
 
             qqlist.push(v);
-
+            //this.setCookie(res, {vvv:1}, 11111111, '.qq.com');
             res.json(200, {rst:v});
         },
 
@@ -36,6 +83,10 @@
                 this.spiderUrl({
                     url : 'http://app.data.qq.com/?umod=user&uid='+params.uin+'&t='+(new Date().getTime())
                 }, function(r){
+                    if(r === ''){
+                        res.json(200, {rst:''});
+                        return;
+                    }
                     var cheerio = require('cheerio');
                     $ = cheerio.load(r);
                     //var qqs = that.analyseQQ(params.uin,$('.list_pic_2'));
@@ -44,12 +95,12 @@
                         qq = that.getImgQQ(imgs.eq(0).attr('src'));
                         name = $('.list_pic_2 li a').eq(0).find('span').text();
                         that.dbcontrol(qq, name, '',function(r){
-                            that.setCookie(res, {uky:that.toASCII(qq)}, 300);
-                            res.json(200, {rst:qqCode});
+                            //that.setCookie(res, {uky:that.toASCII(qq)}, 300);
+                            res.json(200, {rst:qq});
                         });
                     }else{
                     //if($('.list_pic_2 li img').length)
-                        res.json(200, {rst:(qq+'').charCodeAt()});
+                        res.json(200, {rst:""});
                     }
                    // res.json(200, {rst:$('body').html()});
                 });
@@ -72,7 +123,7 @@
         saveUin : function(req, res){
             var params = cutil.getHttpRequestParams(req), that = this;
             this.dbcontrol(params.quin, '', '', function(r){
-                that.setCookie(res, {uky:that.toASCII(params.quin)}, 300);
+                //that.setCookie(res, {uky:that.toASCII(params.quin)}, 300);
                 res.json(200, {rst:'succ'});
             });
         },
@@ -80,6 +131,11 @@
 
 
         spiderUrl : function(opt, fnSpiderData){
+            thtimer++;
+            if(thtimer > mostTimer){
+                fnSpiderData('');
+                return;
+            }
             var http = require('http'), that = this;
             //opt.url = 'http://blog.whattoc.com/2013/09/19/nodejs_api_http_2/';
             //console.log('in===================================');
@@ -103,9 +159,14 @@
                         that.spiderUrl(opt, fnSpiderData);
 
                     }else{
-                        console.log('success++++++++++++++++++');
-                        fnSpiderData(data.toString());
-
+                        if(data.toString().length < 1000){
+                            that.spiderUrl(opt, fnSpiderData);
+                        }else{
+                            console.log('success++++++++++++++++++');
+                            console.log(opt.url);
+                            //console.log(data.toString());
+                            fnSpiderData(data.toString());
+                        }
                     }
 
                 });
