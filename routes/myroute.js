@@ -52,11 +52,31 @@
 
         '/blogqq' : [false, function(req, res){
             var conn = require('./../func/mongo-skin').skin;
-            conn.read('blogqq','', function(err,data){
-                res.render('blogqq',{
-                    title:"qq列表",users:data});
-            }, 1, 3000);
+            var param = cutil.getHttpRequestParams(req);
+            var ps = Number(param.ps) || 50, page = Number(param.pg);
+            conn.count('blogqq', '', function(err, rel){
+
+                var allpage = Math.ceil(rel/ps), pages = [];
+                if(!page) page = 1;
+                if(page > allpage) page = allpage;
+                for(var i=1;i<=allpage;i++)
+                    pages.push(i);
+                if(rel < ps) ps = rel;
+                conn.read('blogqq','', function(err,data){
+                    res.render('blogqq',{
+                        title:"qq列表",users:data,allPage:allpage, count:rel, pages:pages,ps:ps});
+                }, page, ps);
+            })
+
         }],
+
+        '/addTohero' : function(list){
+            conn.count('blogqq', '', function(err, rel){
+                conn.read('blogqq','', function(err,data){
+
+                }, 1, rel);
+            })
+        },
 
         /*----------------------初始化数据-------------------------*/
         '/init/tables' : [false, function(req, res){

@@ -3,13 +3,18 @@
 
 <head>
     <title>{{title}}</title>
+
     <link href="/css/bootstrap3.11.css" rel="stylesheet">
     <link href="/css/common.css" rel="stylesheet">
-    <script src="/jslib/jquery3.js" type="text/javascript"></script>
+    <script src="/jslib/angular.js" type="text/javascript"></script>
+    <script src="/jslib/jquery.js" type="text/javascript"></script>
+    <script src="/js/angularProxy.js" type="text/javascript"></script>
     <script src="/js/util.js" type="text/javascript"></script>
-    <script src="/jslib/bootstrap.js" type="text/javascript"></script>
-    <script src="/js/page.js" type="text/javascript"></script>
-    <script src="/js/qq.js" type="text/javascript"></script>
+    <script src="/js/filter.js" type="text/javascript"></script>
+
+    <script>Atong.config = {'action':'{{action}}','_debug':'{{_debug}}'}</script>
+
+
 </head>
 
 <body>
@@ -23,6 +28,6 @@
     <!--    <a href="/">首页</a> - <a href="/about">自我介绍</a> -->
     </p>
 </footer>
-
+<script src="/js/page.js" type="text/javascript"></script>
 </body>
 </html>

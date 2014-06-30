@@ -39,7 +39,7 @@
                             that.saveBlogQQ(lists,blogid,blogName, fn);
                         }else{
                             mongo.add('blogqq', {
-                                qq :item.uin,
+                                qq :item.uin||item.qq,
                                 name : item.name,
                                 blogid : blogid,
                                 blogname:blogName,

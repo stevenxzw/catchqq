@@ -173,6 +173,31 @@
             return this.parseKnV($(rel).attr('rel'));
         },
 
+        byteLen : function(text){
+            var len = text.length;
+            var matcher = text.match(/[^\x00-\xff]/g);
+            if(matcher)
+                len += matcher.length;
+            return len;
+        },
+
+        byteCut : function(str, length) {
+            var wlen = Util.byteLen(str);
+            if(wlen>length){
+                // 所有宽字用&&代替
+                var c = str.replace(/&/g, " ")
+                    .replace(/[^\x00-\xff]/g, "&&");
+                // c.slice(0, length)返回截短字符串位
+                str = str.slice(0, c.slice(0, length)
+                    // 由位宽转为JS char宽
+                    .replace(/&&/g, " ")
+                    // 除去截了半个的宽位
+                    .replace(/&/g, "").length
+                );
+            }
+            return str;
+        },
+
         timeToDate : function(v){
             if(v === '') return '';
             var nd = new Date(v);

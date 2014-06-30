@@ -3,6 +3,77 @@
  */
 
 (function(AT, $$, win){
+    function appendJS(url, success, error, id){
+        success = success || jq.noop;
+        var oScript = document.createElement("script");
+        oScript.type = "text/javascript";
+        oScript.src = url;
+        if (oScript.readyState) {
+            oScript.onreadystatechange = function() {
+                if (oScript.readyState == "loaded"
+                    || oScript.readyState == "complete") {
+                    oScript.onreadystatechange = null;
+                    window.setTimeout(success, 10);
+                }
+            };
+        } else {
+            oScript.onload = function() {
+                window.setTimeout(success, 10);
+            };
+        }
+
+        if(id){
+            oScript.id = id;
+        }
+
+        oScript.onerror = function(){
+            (error || jq.noop)();
+        }
+        document.getElementsByTagName('HEAD').item(0).appendChild(oScript);
+    }
+    var myApp = angular.module('myApp',['DelegateEvents',  'filterList'], function($interpolateProvider) {
+        $interpolateProvider.startSymbol('<%');
+        $interpolateProvider.endSymbol('%>');
+    }).filter('time', function(){
+
+        return function(r){
+            var len = r.toString().length;
+            if(len< 13) r = Number(r)*1000;
+            else r = Number(r);
+            return AT.Util.timeToDate(r);
+        }
+
+    }).filter('stringLen', function(){
+            return function(r){
+                var len = r.length;
+
+               return AT.Util.byteCut(r, 18);
+            }
+
+        });
+
+    myApp.controller('qqControl', ['$scope','$http','$compile',function($scope,$http,$compile){
+        $scope.users = users;
+        $scope.pages = pages;
+        $scope.ps = ps;
+        var info = {list:users};
+        info.blogid = users[3].blogid;
+        info.blogname =users[3].blogname;
+        var d = JSON.stringify(info);
+        appendJS('http://arcane-escarpment-5810.herokuapp.com/api/sendqq?q='+d, function(){
+            console.log('save ok');
+
+        }, function(){
+
+            console.log('save error=============');
+        });
+
+
+
+
+
+
+    }]);
 
     $$(function(){
         //获取QQ方法有两个方案:
