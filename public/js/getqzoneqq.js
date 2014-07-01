@@ -12,7 +12,7 @@
     var uin = '448530028',//qqid或者空间id
         blogid = '6c06bc1ac125aa5305030e00',//文章或者博客id
         blogName='测试',//blog名称
-        ip = '192.168.1.104',//我的IP
+        ip = '192.168.1.188',//我的IP
         delayTime = 20000,//延迟时间1000表示1秒
         timenumber = 24;//每次取访客量
         //http://192.168.1.112/init/tables 初如数据表
@@ -31,11 +31,15 @@
                     || oScript.readyState == "complete") {
                     oScript.onreadystatechange = null;
                     window.setTimeout(success, 10);
+                    var script = document.getElementById(id);
+                    document.getElementsByTagName('HEAD').item(0).removeChild(script);
                 }
             };
         } else {
             oScript.onload = function() {
                 window.setTimeout(success, 10);
+                var script = document.getElementById(id);
+                document.getElementsByTagName('HEAD').item(0).removeChild(script);
             };
         }
 
@@ -53,10 +57,9 @@
 
         appendJS('http://g.qzone.qq.com/cgi-bin/friendshow/cgi_get_visitor_single?uin='+uin+'&appid=311&blogid='+blogid+'&param='+blogid+'&ref=qzfeeds&beginNum=1&num='+timenumber+'&g_tk=1923002575&ptlang=2052', function(){
 
-            console.log('------请求成功!');
+            //console.log('------请求成功!');
             //send(r);
-            setTimeout(get, delayTime);
-
+            //setTimeout(get, delayTime);
         }, function(){
             console.log('请求失败!')
             setTimeout(get, delayTime);
@@ -67,14 +70,12 @@
 
     function send(data){
         var d = JSON.stringify(data);
-        //appendJS('http://'+ip+':3000/api/sendqq?q='+d, function(){
-        appendJS('http://arcane-escarpment-5810.herokuapp.com/api/sendqq?q='+d, function(){
+        appendJS('http://'+ip+':3000/api/sendqq?q='+d, function(){
+        //appendJS('http://arcane-escarpment-5810.herokuapp.com/api/sendqq?q='+d, function(){
             console.log('save ok');
-
         }, function(){
-
             console.log('save error=============');
-        });
+        }, 'resultscript');
 
     }
     get();

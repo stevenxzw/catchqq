@@ -21,6 +21,11 @@
                 title:"首页"});
         }],
 
+        '/get' : function(req, res){
+            res.render('get',{
+                title:"获取数据"});
+        },
+
         '/api/getUin' : [false, function(req, res){ //分配uid
             impl.getUin(req, res);
         }],

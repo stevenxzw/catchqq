@@ -65,11 +65,14 @@
         getAreaByQQ : function(param, res){
             var that = this;
                 mongo.read('blogqq',{ "area":""}, function(err,data){
+
                     if(!err){
+
                         if(data.length == 0){
                             res.send('<div>没有可转换数据</div>');
 
                         }else{
+                            console.log('data:'+data);
                             that.getAreaByQQImpl(data, function(){
                                  //res.json(200, {rst:"success"});
                                  res.send('<div>获取完成</div>');
@@ -108,6 +111,7 @@
                         fn && fn('');
                         return;
                     }
+                    console.log(response.response);
                     if( response.response.country){
                         var country =  cutil.replaceAll(cutil.trim(response.response.country.text()), /未知/gi, ''),
                             state =  cutil.replaceAll(cutil.trim(response.response.state.text()), /未知/gi, ''),

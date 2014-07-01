@@ -15,7 +15,7 @@
         }],
 
         blogqq : [{
-            qq : '79186391',
+            qq : '154036777',
             blogid : '6c06bc1ac125aa5305030e00',
             name : 'test',
             blogname : '测试',

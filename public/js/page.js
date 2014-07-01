@@ -74,6 +74,16 @@
 
 
 
+    }])
+    .controller('Get', ['$scope','$http','$compile',function($scope,$http,$compile){
+            var dd = $('#dropdown').dropdown();
+
+            dd.parent().on('hide.bs.dropdown', function (e) {
+                console.log(arguments);
+            });
+
+            dd.dropdown('toggle')
+
     }]);
 
     $$(function(){
