@@ -10,7 +10,8 @@
         filter = require('./../func/filter').routerFilter,
         cutil = require('./../func/cutil').util,
         apiUser = require('./../API/user').apiUser,
-        adminPage = require('./../func/adminPage').adminPage;
+        adminPage = require('./../func/adminPage').adminPage,
+        conn = require('./../func/mongo-skin.js').skin;
 
 
     var defaultConfig = {
@@ -103,6 +104,12 @@
             var param = cutil.getHttpRequestParams(req);
             impl.toExcel( req, res, param);
 
+        },
+
+        '/countnull' : function(req, res){
+            conn.count('blogqq', {area : ''}, function(err, rel){
+                res.json(200, {num : rel});
+            });
         },
 
         /*----------------------初始化数据-------------------------*/
