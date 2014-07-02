@@ -108,6 +108,9 @@
                         $http.get(AT.config.host+'/getAreaByQQ').success(function(r){
                             if(r.len){
                                 e.target.disabled = false;
+                                setTimeout(function(){
+                                    $(e.target).trigger('click');
+                                }, 120000);
                                 $scope.setAreaLen += Number(r.len);
                                 $scope.$digest();
 
