@@ -54,7 +54,7 @@
             return function(r){
 
 
-                return r?r:'-';
+                return $$.trim(r)?r:'-';
             }
         });
 
