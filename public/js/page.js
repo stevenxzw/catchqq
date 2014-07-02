@@ -47,7 +47,7 @@
             return function(r, l){
                 var len = r.length;
 
-               return AT.Util.byteCut(r, 18||l);
+               return AT.Util.byteCut(r, l||18);
             }
 
         }).filter('limitNull', function(){

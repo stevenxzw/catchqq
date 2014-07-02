@@ -14,7 +14,7 @@
                 <div>时间</div>
                 <div>文章名称</div>
                 <div>地区</div>
-                <div style="width:10%">blogid</div>
+                <div style="width:18%">blogid</div>
             </div>
             <div  class="list-group-item" ng-repeat="user in users">
                 <div style="width:5%"><% $index+1%></div>
@@ -23,7 +23,7 @@
                 <div><% user.time| time : 'yyyy-MM-dd'%></div>
                 <div><% user.blogname%></div>
                 <div><% user.area|limitNull %></div>
-                <div style="width:10%" title="<% user.blogid %>"><% user.blogid|stringLen:14 %></div>
+                <div style="width:18%" title="<% user.blogid %>"><% user.blogid|stringLen:30 %></div>
             </div>
         </div>
 
