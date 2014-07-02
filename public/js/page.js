@@ -84,6 +84,21 @@
     .controller('Get', ['$scope','$http','$compile',function($scope,$http,$compile){
             //appendJS('http://c.v.qq.com/vuserfolders?otype=json&callback=cb');
             //59.41.33.218
+            var socket = io.connect('http://localhost:3000');
+
+            socket.on('socket-data', function (data) {
+                console.log(data);
+            });
+            socket.on('news', function (data) {
+                console.log(data);
+            });
+
+            socket.on('finishOne', function(){
+                //console.log('in finishOne');
+                $scope.setAreaLen++;
+                $scope.$digest();
+            })
+
             var blog = {
                 qq : '448530028',
                 id : '6c06bc1ae975b353c45c0d00',
@@ -104,7 +119,9 @@
                 switch(buttonValue){
 
                     case 'getArea':
-                        e.target.disabled = true;
+                        //e.target.disabled = true;
+                        socket.emit('getArea',{area : $scope.area});
+                        return;
                         $http.get(AT.config.host+'/getAreaByQQ').success(function(r){
                             if(r.len){
                                 e.target.disabled = false;

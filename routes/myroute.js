@@ -25,6 +25,24 @@
         }],
 
         '/get' : function(req, res){
+            var io = global.io;
+            io.sockets.on('connection', function (socket) {
+                socket.on('getArea', function(param){
+
+                     impl.socket_area(param, function(result){
+
+                        socket.emit('data', {rst : result});
+                     }, function(qq){
+                        //console.log('emit finishOne');
+                         socket.emit('finishOne', {rst : qq});
+                     });
+                    /*
+                    conn.count('blogqq', {area : ''}, function(err, rel){
+                        socket.emit('socket-data', {rst : rel});
+                    });*/
+                })
+            });
+
             res.render('get',cutil.extend({
                 title:"获取数据"}, defaultConfig));
         },
@@ -110,6 +128,11 @@
             conn.count('blogqq', {area : ''}, function(err, rel){
                 res.json(200, {num : rel});
             });
+        },
+
+        '/socket' : function(req, res){
+                res.render('socket',{
+                    title:"socket"});
         },
 
         /*----------------------初始化数据-------------------------*/

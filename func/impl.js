@@ -185,31 +185,44 @@
              });
         },
 
-        getAreaByQQImpl : function(lists, fun){
+        socket_area : function(param, fn ,fnOne, res){
+            var page = param.page|| 1, ps = param.ps || 20, that = this;
+            mongo.read('blogqq',{ "area":""}, function(err,data){
+                if(!err){
+                    if(data.length == 0){
+                        fn && fn({'res':'nulldata'});
+                    }else{
+                        var len = data.length;
+                        //console.log('data:'+data);
+                        that.getAreaByQQImpl(data, function(){
+                            //res.json(200, {rst:"success"});
+                            fn && fn({'res': 'success'});
+                            //res.send('<div>获取完成</div>');
+                        }, fnOne);
+                    }
+                }
+
+            },page, ps);
+
+        },
+
+        getAreaByQQImpl : function(lists, fun, fnOne){
             if(lists.length>0){
                 var item = lists.shift(), that = this, qq = item['qq'];
                 this.getAreaByApi(qq, function(city){
-                    if(city){
-                        mongo.update('blogqq', {qq:qq}, {$set:{'area':city}}, function(r){
-                            if(lists.length == 0){
-                                fun &fun();
-                            }else{
-                                setTimeout(function(){
-                                    that.getAreaByQQImpl(lists, fun);
-                                },3500)
-                            }
-                        })
-                    }else{
-                        mongo.update('blogqq', {qq:qq}, {$set:{'area':city}}, function(r){
-                            if(lists.length == 0){
-                                fun &fun();
-                            }else{
-                                setTimeout(function(){
-                                     that.getAreaByQQImpl(lists, fun);
-                                },3500)
-                            }
-                        })
-                    }
+                    city = city || '';
+                    mongo.update('blogqq', {qq:qq}, {$set:{'area':city}}, function(r){
+                        if(lists.length == 0){
+                            fun &fun();
+                        }else{
+                            //console.log('fnOne');
+                            fnOne && fnOne(qq);
+                            setTimeout(function(){
+                                that.getAreaByQQImpl(lists, fun, fnOne);
+                            },1000)
+                        }
+                    })
+
 
                 });
             }else{
