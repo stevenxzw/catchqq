@@ -33,7 +33,10 @@
             if(blogid) des['blogid'] = blogid;
             if(blogname) des['blogname'] = blogname;
 
-            if(area) des['area'] = eval("/"+area+"/");
+            if(area){
+                if(area !== '全部')
+                    des['area'] = eval("/"+area+"/");
+            }
             var filename = param.filename;
             mongo.read('blogqq', des, function(err, r){
                 if(!err){
