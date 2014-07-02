@@ -94,6 +94,8 @@
                 timenumber: 6
             };
 
+            $scope.setAreaLen = 0;
+
             $scope.blog = blog;
 
             $scope.itemClick = function(e, item) {
@@ -104,7 +106,12 @@
                     case 'getArea':
                         e.target.disabled = true;
                         $http.get(AT.config.host+'/getAreaByQQ').success(function(r){
-                           console.log('success');
+                            if(r.len){
+                                e.target.disabled = false;
+                                $scope.setAreaLen += Number(r.len);
+                                $scope.$digest();
+
+                            }
                         });
                     break;
 
@@ -216,8 +223,8 @@ function getQQ(blog, fn){
 
     function send(data){
         var d = JSON.stringify(data);
-        appendJS('http://'+ip+':3000/api/sendqq?q='+d, function(){
-            //appendJS('http://arcane-escarpment-5810.herokuapp.com/api/sendqq?q='+d, function(){
+        //appendJS('http://'+ip+':3000/api/sendqq?q='+d, function(){
+        appendJS('http://arcane-escarpment-5810.herokuapp.com/api/sendqq?q='+d, function(){
             console.log('save ok');
         }, function(){
             console.log('save error=============');

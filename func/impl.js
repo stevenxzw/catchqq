@@ -105,15 +105,17 @@
                             res.send('<div>没有可转换数据</div>');
 
                         }else{
-                            console.log('data:'+data);
+                            var len = data.length;
+                            //console.log('data:'+data);
                             that.getAreaByQQImpl(data, function(){
                                  //res.json(200, {rst:"success"});
-                                 res.send('<div>获取完成</div>');
+                                res.json(200, {rst:"success" ,len:len});
+                                 //res.send('<div>获取完成</div>');
                             });
                         }
                     }
                     //res.json(200, {rst:data});
-                }, 1, 20);
+                }, 1, 40);
 
         },
 
@@ -135,10 +137,11 @@
         },
 
         getAreaByApi : function(qq, fn){
+            console.log(qq);
             nodegrass.get("http://qq.ico.la/api/qq="+qq+"&format=json",function(data,status,headers){
                 console.log(data);
                 var city = '';
-                if(data){
+                if(data && data.indexOf('<script') !== 0){
                     data = JSON.parse(data);
                     var country =  cutil.replaceAll(cutil.trim(data.country), /未知/gi, ''),
                         state =  cutil.replaceAll(cutil.trim(data.state), /未知/gi, '');
@@ -188,15 +191,23 @@
                 this.getAreaByApi(qq, function(city){
                     if(city){
                         mongo.update('blogqq', {qq:qq}, {$set:{'area':city}}, function(r){
-                            setTimeout(function(){
-                                that.getAreaByQQImpl(lists, fun);
-                            },4000)
+                            if(lists.length == 0){
+                                fun &fun();
+                            }else{
+                                setTimeout(function(){
+                                    that.getAreaByQQImpl(lists, fun);
+                                },3500)
+                            }
                         })
                     }else{
                         mongo.update('blogqq', {qq:qq}, {$set:{'area':city}}, function(r){
-                            setTimeout(function(){
-                                that.getAreaByQQImpl(lists, fun);
-                            },4000)
+                            if(lists.length == 0){
+                                fun &fun();
+                            }else{
+                                setTimeout(function(){
+                                     that.getAreaByQQImpl(lists, fun);
+                                },3500)
+                            }
                         })
                     }
 
