@@ -22,7 +22,7 @@
                 <div title="<% user.name%>"><% user.name|stringLen%></div>
                 <div><% user.time| time : 'yyyy-MM-dd'%></div>
                 <div><% user.blogname%></div>
-                <div><% user.area|limitNull %></div>
+                <div><% user.area|limitNull|stringLen:18 %></div>
                 <div style="width:18%" title="<% user.blogid %>"><% user.blogid|stringLen:30 %></div>
             </div>
         </div>
