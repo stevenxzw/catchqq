@@ -74,14 +74,10 @@
         <div class="panel-body" >
             <form class="form-horizontal" role="form">
                 <div class="form-group">
-                    <label  class="col-sm-2 control-label">地区</label>
-                    <select  ng-model="blog.area">
-                        <option value="广州">广州</option>
-						<option value="广东">广东</option>
-                        <option value="湖南">湖南</option>
-                        <option value="全部">全部</option>
-
-                    </select>
+                    <label for="barea" class="col-sm-2 control-label">地区</label>
+                    <div class="col-sm-10">
+                        <input  class="form-control" ng-model="blog.area" id="barea" placeholder="area">
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="bids" class="col-sm-2 control-label">blogID</label>
