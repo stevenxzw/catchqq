@@ -6,8 +6,10 @@
 (function(){
     var mongo = require('./mongo-skin.js').skin,
         cutil = require('./../func/cutil').util,
+        excelfn = require('./../func/exportExcel'),
         _debug = global._debug,
-        qqlist = global.qqlist;
+        qqlist = global.qqlist,
+        timer = null;
 
     var xmlreader = require('xmlreader');
     var nodegrass = require('nodegrass');
@@ -26,6 +28,34 @@
             }
         },
 
+        toExcel : function(req, res, param){
+            var blogid  = param.id, blogname = param.name, area = param.area,des = {};
+            if(blogid) des['blogid'] = blogid;
+            if(blogname) des['blogname'] = blogname;
+
+            if(area) des['area'] = eval("/"+area+"/");
+            var filename = param.filename;
+            mongo.read('blogqq', des, function(err, r){
+                if(!err){
+                    var data = [];
+                    for(var i= 0,len = r.length;i<len;i++){
+                        var item = r[i];
+                        data.push([item.qq, item.name, item.area, toTime(item.time), item.blogname, item.blogid]);
+                    }
+                    excelfn.exportExcel(req, res, data, filename);
+                }else{
+                     res.json(200, {err : 'error'});
+                }
+                //excelfn.exportExcel(req, res);
+            });
+            function toTime(r){
+                var len = r.toString().length;
+                if(len< 13) r = Number(r)*1000;
+                else r = Number(r);
+                return cutil.timeToDate(r);
+            }
+
+        },
         saveBlogQQ : function(lists, blogid,blogName, fn){
             if(lists.length>0){
                 var item = lists.shift(), that = this;
@@ -102,8 +132,23 @@
         },
 
         getAreaByApi : function(qq, fn){
-            nodegrass.get("http://qq.ico.la/api/qq="+qq+"&format=xml",function(data,status,headers){
+            nodegrass.get("http://qq.ico.la/api/qq="+qq+"&format=json",function(data,status,headers){
                 console.log(data);
+                var city = '';
+                if(data){
+                    data = JSON.parse(data);
+                    var country =  cutil.replaceAll(cutil.trim(data.country), /未知/gi, ''),
+                        state =  cutil.replaceAll(cutil.trim(data.state), /未知/gi, '');
+                    city =  cutil.replaceAll(cutil.trim(data.city), /未知/gi, '');
+                    if(city || country || state){
+                        if(city === ''|| city ==='未知' || city === '-'){
+                            city = country+' '+state;
+                        }
+                    }
+                }
+                fn && fn(city);
+                /*
+
                 //console.log(typeof data);
                 xmlreader.read('<response>'+data+'</response>', function(errors, response){
                     if(null !== errors ){
@@ -127,6 +172,7 @@
                     }
                     fn && fn(city);
                 });
+                */
             },'utf8').on('error', function(e) {
                     console.log("Got error: " + e.message);
                     fn && fn('');
@@ -139,10 +185,16 @@
                 this.getAreaByApi(qq, function(city){
                     if(city){
                         mongo.update('blogqq', {qq:qq}, {$set:{'area':city}}, function(r){
-                            that.getAreaByQQImpl(lists, fun);
+                            setTimeout(function(){
+                                that.getAreaByQQImpl(lists, fun);
+                            },4000)
                         })
                     }else{
-                        that.getAreaByQQImpl(lists, fun);
+                        mongo.update('blogqq', {qq:qq}, {$set:{'area':city}}, function(r){
+                            setTimeout(function(){
+                                that.getAreaByQQImpl(lists, fun);
+                            },4000)
+                        })
                     }
 
                 });

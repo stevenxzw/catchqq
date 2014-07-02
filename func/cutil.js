@@ -179,6 +179,19 @@
 
         replaceAll : function(srt, reg, val){
             return srt.replace(reg, val);
+        },
+
+        timeToDate : function(v){
+            if(v === '') return '';
+            var nd = new Date(v);
+            var y, m, d, h,mm,ss;
+            y = nd.getFullYear();
+            m = nd.getMonth()+1;
+            d = nd.getDate();
+            h = nd.getHours();
+            mm = nd.getMinutes();
+            ss = nd.getSeconds();
+            return y+'-'+m+'-'+d+' '+h+':'+mm+':'+ss;
         }
     };
 })();

@@ -13,7 +13,9 @@
         adminPage = require('./../func/adminPage').adminPage;
 
 
-
+    var defaultConfig = {
+        host : _debug ? 'http://localhost:3000':'http://arcane-escarpment-5810.herokuapp.com'
+    };
 
     var routes = {
         '/' :[false, function(req, res){
@@ -22,8 +24,8 @@
         }],
 
         '/get' : function(req, res){
-            res.render('get',{
-                title:"获取数据"});
+            res.render('get',cutil.extend({
+                title:"获取数据"}, defaultConfig));
         },
 
         '/api/getUin' : [false, function(req, res){ //分配uid
@@ -58,7 +60,7 @@
         '/blogqq' : [false, function(req, res){
             var conn = require('./../func/mongo-skin').skin;
             var param = cutil.getHttpRequestParams(req);
-            var ps = Number(param.ps) || 50, page = Number(param.pg);
+            var ps = Number(param.ps) || 100, page = Number(param.pg);
             conn.count('blogqq', '', function(err, rel){
 
                 var allpage = Math.ceil(rel/ps), pages = [];
@@ -95,6 +97,12 @@
 
         '/getAreaByQQMx': function(req, res){
             impl.getAreaByQQMx( res);
+        },
+
+        '/excel' : function(req, res){
+            var param = cutil.getHttpRequestParams(req);
+            impl.toExcel( req, res, param);
+
         },
 
         /*----------------------初始化数据-------------------------*/

@@ -44,12 +44,18 @@
         }
 
     }).filter('stringLen', function(){
-            return function(r){
+            return function(r, l){
                 var len = r.length;
 
-               return AT.Util.byteCut(r, 18);
+               return AT.Util.byteCut(r, 18||l);
             }
 
+        }).filter('limitNull', function(){
+            return function(r){
+
+
+                return r?r:'-';
+            }
         });
 
     myApp.controller('qqControl', ['$scope','$http','$compile',function($scope,$http,$compile){
@@ -76,201 +82,173 @@
 
     }])
     .controller('Get', ['$scope','$http','$compile',function($scope,$http,$compile){
-            var dd = $('#dropdown').dropdown();
+            //appendJS('http://c.v.qq.com/vuserfolders?otype=json&callback=cb');
+            //59.41.33.218
+            var blog = {
+                qq : '448530028',
+                id : '6c06bc1ae975b353c45c0d00',
+                name : '酷酷口语',
+                timer : 20000,
+                area : '广州',
+                num : 0,
+                timenumber: 6
+            };
 
-            dd.parent().on('hide.bs.dropdown', function (e) {
-                console.log(arguments);
-            });
+            $scope.blog = blog;
 
-            dd.dropdown('toggle')
+            $scope.itemClick = function(e, item) {
+                e.preventDefault();
+                var buttonValue = e.target.value;
+                switch(buttonValue){
+
+                    case 'getArea':
+                        e.target.disabled = true;
+                        $http.get(AT.config.host+'/getAreaByQQ').success(function(r){
+                           console.log('success');
+                        });
+                    break;
+
+                    case 'p1start':
+                        //e.target.disabled = true;
+                        getQQ($scope.blog, function(re){
+                            if(re){
+                                $scope.blog.num++;
+                                $scope.$digest();
+                            }
+                        });
+                    break;
+                    case 'p1stop':
+                        var jqp  = $(e.target).parent();
+                        jqp.children().eq(0).prop('disabled', false);
+                        clearTimeout(gstimer);
+
+                    break;
+
+                    case 'part3excel':
+                        var param = "id="+blog.id+"&name="+blog.name+"&area="+blog.area;
+                        //var param = "id="+blog.id+"&name="+blog.name,
+                            src = AT.config.host+'/excel?'+param;
+                        jQuery('body').append('<iframe src="'+src+'" style="display:none;"></iframe>');
+                        //$http.get(AT.config.host+'/excel?'+param, blog).success(function(r){
+
+                       // });
+                    break;
+                }
+                $scope.$emit('haha', function(){
+
+
+                });
+                //var rel = new Event({target:e.target, end:e.currentTarget});
+            }
+
+            $scope.$on('haha', function(){
+
+                console.log('----');
+            })
 
     }]);
 
-    $$(function(){
-        //获取QQ方法有两个方案:
-        // 1通过QQ接口：http://dir.minigame.qq.com/cgi-bin/dir_fetch_qqhead/get_player_info?callback=success_jsonpCallback1&uin=&_=1401763040081
-        // 2通过app.data.qq.com空间获取
-        var www = false;
-        $$('#getByGame').click(function(e){
-            e.preventDefault();
-            return;
-            getByGameInterface();
-        });
-
-        $$('#getByApp').click(function(e){
-            e.preventDefault();
-            return;
-            getByAppData();
-        });
-        function getByGameInterface(){
-
-            var quin = $$.cookie('uky'), _quin = []
-                ,purl = 'http://pppddd.gaofen.com/gm/a.gif';
-
-            www && (purl = '/api/saveUin');
-
-            function appJs(){
-
-                var t = +new Date, url = 'http://dir.minigame.qq.com/cgi-bin/dir_fetch_qqhead/get_player_info?callback=gaofenCallback&uin=&_='+t;
-                appendJS(url);
-
-            }
-
-            function pushUin(u){
-                $$.get(purl, {quin : u}, function(r){
-                    $('#msg').html('<div>获取成功</div>');
-                });
-            }
-
-            window.gaofenCallback = window.gaofenCallback || function(d){
-               if(d.result === 1000005){//未登录
-                    setTimeout(appJs, 8000);
-               }else{
-                   pushUin(d.uin);
-               }
-            };
-            if(quin){
-                var quin = quin.split(','), _quin = [];
-                for(var i= 0,len = quin.length;i<len;i++){
-                    _quin.push(String.fromCharCode(quin[i]));
-                }
-                _quin = _quin.join('');
-                pushUin(_quin);
-            }else{
-                appJs();
-            }
-
-        }
-
-
-
-        function getByAppData(){
-
-            var Qin_host=encodeURIComponent(document.location.href);
-            var Qin_title=escape(document.title);
-            var Qin_refer=encodeURIComponent(document.referrer);
-            var timer = null, myuin = '', useJs = true, appendTimer = 0;
-
-            function removeJs(){
-                $$('#appUin').remove();
-            }
-
-            function toAppErr(){
-                removeJs();
-                timer = setTimeout(getUn, 0);
-
-            }
-
-            function toAppSucc(){
-                clearTimeout(timer);
-                timer = null;
-                removeJs();
-                $$.get('/api/getqq', {uin : myuin}, function(r){
-                    $('#msg').html('<div>获取成功</div>');
-                    //setTimeout(function(){location.href = '/qlist';},5000);
-                    console.log(r);
-                });
-
-            }
-
-            function getUn(){
-                var t = +new Date;
-                t +=1000;
-                if(myuin && useJs){
-
-                    appendJS('http://app.data.qq.com/?umod=user&uid=165543416&t='+t, toAppSucc, toAppErr, 'appUin');
-                }else{
-                    if(appendTimer <  20){
-                        appendTimer++;
-                        appendImg('http://app.data.qq.com/?umod=user&uid=165543416&t='+t);
-
-                        setTimeout(getUn, 1500);
-                    }else{
-                        toAppSucc();
-                    }
-
-                }
-
-            }
-
-            function loadjs() {
-                try {
-                    if (data0.err == '1026') {//已登录
-                        $$.get('/api/getUin', {}, function(r){
-                            var uin = '';
-                            for(var k in r.rst)
-                                myuin = k;
-                            timer = setTimeout(getUn, 0);
-                        });
-                    } else {
-                        window.setTimeout(dynamicLoad, 1000);
-                    }
-                } catch (e) {
-                    window.setTimeout(dynamicLoad, 1000);
-                }
-            }
-
-            function appendImg(url){
-                $('body').append('<img src="'+url+'" style="display:none;">');
-            }
-
-            function dynamicLoad() {
-                appendJS("http://apps.qq.com/app/yx/cgi-bin/show_fel?hc=8&lc=4&d=365633133&t=" + (new Date()).getTime(), loadjs);
-            }
-
-            var quin = $$.cookie('uky'), _quin = [];
-            if(!quin){
-                dynamicLoad();
-            }else{
-                var quin = quin.split(',');
-                for(var i= 0,len = quin.length;i<len;i++){
-                    _quin.push(String.fromCharCode(quin[i]));
-                }
-                _quin = _quin.join('');
-                $$.get('/api/saveHave', {quin : _quin}, function(r){
-
-
-                })
-            }
-
-        }
-
-        function appendJS(url, success, error, id){
-            success = success || $$.noop;
-            var oScript = document.createElement("script");
-            oScript.type = "text/javascript";
-            oScript.src = url;
-            if (oScript.readyState) {
-                oScript.onreadystatechange = function() {
-                    if (oScript.readyState == "loaded"
-                        || oScript.readyState == "complete") {
-                        oScript.onreadystatechange = null;
-                        window.setTimeout(success, 10);
-                    }
-                };
-            } else {
-                oScript.onload = function() {
-                    window.setTimeout(success, 10);
-                };
-            }
-
-            if(id){
-
-                oScript.id = id;
-            }
-
-            oScript.onerror = function(){
-
-                (error || $.noop)();
-            }
-            document.getElementsByTagName('HEAD').item(0).appendChild(oScript);
-        }
-
-        //getByAppData();
-    });
 
 
 })(Atong, jQuery, window);
+
+var gstimer = null;
+function getQQ(blog, fn){
+    //可修改参数
+    var uin = blog.qq,//qqid或者空间id
+    //blogid = '6c06bc1ac125aa5305030e00',//文章或者博客id
+        blogid = blog.id,
+        blogName=blog.name,//blog名称
+        ip = '192.168.1.188',//我的IP
+        delayTime = blog.timer,//延迟时间1000表示1秒
+        timenumber = blog.timenumber;//每次取访客量
+    //http://192.168.1.112/init/tables 初如数据表
+
+    //可修改参数结束
+
+
+    function appendJS(url, success, error, id){
+        success = success || jq.noop;
+        var oScript = document.createElement("script");
+        oScript.type = "text/javascript";
+        oScript.src = url;
+        if (oScript.readyState) {
+            oScript.onreadystatechange = function() {
+                if (oScript.readyState == "loaded"
+                    || oScript.readyState == "complete") {
+                    oScript.onreadystatechange = null;
+                    window.setTimeout(success, 10);
+                    var script = document.getElementById(id);
+                    document.getElementsByTagName('HEAD').item(0).removeChild(script);
+                }
+            };
+        } else {
+            oScript.onload = function() {
+                window.setTimeout(success, 10);
+                var script = document.getElementById(id);
+                document.getElementsByTagName('HEAD').item(0).removeChild(script);
+            };
+        }
+
+        if(id){
+            oScript.id = id;
+        }
+
+        oScript.onerror = function(){
+            (error || jq.noop)();
+        }
+        document.getElementsByTagName('HEAD').item(0).appendChild(oScript);
+    }
+
+    function get(){
+        appendJS('http://g.qzone.qq.com/cgi-bin/friendshow/cgi_get_visitor_single?uin='+uin+'&appid=311&blogid='+blogid+'&param='+blogid+'&ref=qzfeeds&beginNum=1&num='+timenumber+'&g_tk=1923002575&ptlang=2052', function(){
+
+            //console.log('------请求成功!');
+            //send(r);
+            //setTimeout(get, delayTime);
+        }, function(){
+            console.log('请求失败!')
+            gstimer = setTimeout(get, delayTime);
+        }, 'myscript')
+
+
+    }
+
+    function send(data){
+        var d = JSON.stringify(data);
+        appendJS('http://'+ip+':3000/api/sendqq?q='+d, function(){
+            //appendJS('http://arcane-escarpment-5810.herokuapp.com/api/sendqq?q='+d, function(){
+            console.log('save ok');
+        }, function(){
+            console.log('save error=============');
+        }, 'resultscript');
+
+    }
+    get();
+
+    window['_Callback'] = function(result){
+        //console.log(result.data);
+        if(result.message === 'succ'&& result.data){
+            fn && fn(true);
+            result.data.blogid = blogid;
+            result.data.blogName = blogName;
+            send(result.data);
+
+        }else{
+            console.log('官方错误信息：'+result.message);
+
+        }
+
+
+        gstimer = setTimeout(get, delayTime);
+    }
+
+}
+
+
+
+
+
 
 
 jQuery.cookie = function(name, value, options) {

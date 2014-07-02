@@ -10,11 +10,12 @@
 (function(){
     //可修改参数
     var uin = '448530028',//qqid或者空间id
-        blogid = '6c06bc1ac125aa5305030e00',//文章或者博客id
+        //blogid = '6c06bc1ac125aa5305030e00',//文章或者博客id
+        blogid = '6c06bc1ae975b353c45c0d00',
         blogName='测试',//blog名称
         ip = '192.168.1.188',//我的IP
         delayTime = 20000,//延迟时间1000表示1秒
-        timenumber = 24;//每次取访客量
+        timenumber = 6;//每次取访客量
         //http://192.168.1.112/init/tables 初如数据表
 
     //可修改参数结束

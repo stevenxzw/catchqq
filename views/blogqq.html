@@ -8,20 +8,22 @@
         </ul>
         <div class="list-group"  selector="div">
             <div class="list-group-item">
-                <div>Index</div>
+                <div  style="width:5%">Index</div>
                 <div>QQ</div>
                 <div>likename</div>
                 <div>时间</div>
                 <div>文章名称</div>
                 <div>地区</div>
+                <div style="width:10%">blogid</div>
             </div>
             <div  class="list-group-item" ng-repeat="user in users">
-                <div><% $index+1%></div>
+                <div style="width:5%"><% $index+1%></div>
                 <div><% user.qq  %></div>
                 <div title="<% user.name%>"><% user.name|stringLen%></div>
                 <div><% user.time| time : 'yyyy-MM-dd'%></div>
                 <div><% user.blogname%></div>
-                <div><% user.area %></div>
+                <div><% user.area|limitNull %></div>
+                <div style="width:10%" title="<% user.blogid %>"><% user.blogid|stringLen:14 %></div>
             </div>
         </div>
 
