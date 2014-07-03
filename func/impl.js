@@ -144,15 +144,21 @@
                 console.log(data);
                 var city = '';
                 if(data && data.indexOf('<script') !== 0){
-                    data = JSON.parse(data);
-                    var country =  cutil.replaceAll(cutil.trim(data.country), /未知/gi, ''),
-                        state =  cutil.replaceAll(cutil.trim(data.state), /未知/gi, '');
-                    city =  cutil.replaceAll(cutil.trim(data.city), /未知/gi, '');
-                    if(city || country || state){
-                        if(city === ''|| city ==='未知' || city === '-'){
-                            city = country+' '+state;
+                    try {
+                        data = JSON.parse(data);
+                        var country =  cutil.replaceAll(cutil.trim(data.country), /未知/gi, ''),
+                            state =  cutil.replaceAll(cutil.trim(data.state), /未知/gi, '');
+                        city =  cutil.replaceAll(cutil.trim(data.city), /未知/gi, '');
+                        if(city || country || state){
+                            if(city === ''|| city ==='未知' || city === '-'){
+                                city = country+' '+state;
+                            }
                         }
+                    } catch (e) {
+                        console.log(e.name + ": " + e.message);
                     }
+
+
                 }
                 fn && fn(city);
                 /*

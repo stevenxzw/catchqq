@@ -36,6 +36,7 @@
                 });
             }
             io.sockets.on('connection', function (socket) {
+                socket.emit('ingetpage');
                 socket.on('getArea', function(param){
                     console.log('socket-getArea');
                     clearTimeout(dbclick);
