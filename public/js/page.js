@@ -88,6 +88,8 @@
             //var socket = io.connect('http://localhost:3002');
             $$('#getArea').prop('disabled', false);
             socket.on('getArea-finished', function (data) {
+                console.log('getArea-finished');
+                console.log(data);
                 if(data.rst.res === 'try-catch'){
                     $scope.Area.msg = '异常，try-catch';
                     $scope.$digest();
