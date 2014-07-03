@@ -84,7 +84,8 @@
     .controller('Get', ['$scope','$http','$compile',function($scope,$http,$compile){
             //appendJS('http://c.v.qq.com/vuserfolders?otype=json&callback=cb');
             //59.41.33.218
-            var socket = io.connect('http://localhost:3002');
+            //var socket = io.connect('http://localhost:3002');
+            var socket = io.connect('http://arcane-escarpment-5810.herokuapp.com');
             $$('#getArea').prop('disabled', false);
             socket.on('getArea-finished', function (data) {
                 console.log(data);
