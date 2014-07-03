@@ -15,7 +15,7 @@
 
 
     var defaultConfig = {
-        host : _debug ? 'http://localhost:3000':'http://arcane-escarpment-5810.herokuapp.com'
+        host : _debug ? 'http://localhost:3002':'http://arcane-escarpment-5810.herokuapp.com'
     };
 
     var routes = {
@@ -25,22 +25,34 @@
         }],
 
         '/get' : function(req, res){
-            var io = global.io;
+            var io = global.io, dbclick = null;
+            function getAreaAction(param, socket){
+                console.log('socket-getArea-action');
+                impl.socket_area(param.area, function(result){
+                    socket.emit('getArea-finished', {rst : result});
+                }, function(qq){
+                    //console.log('emit finishOne');
+                    socket.emit('finishOne', {rst : qq});
+                });
+            }
             io.sockets.on('connection', function (socket) {
                 socket.on('getArea', function(param){
-
-                     impl.socket_area(param, function(result){
-
-                        socket.emit('data', {rst : result});
-                     }, function(qq){
-                        //console.log('emit finishOne');
-                         socket.emit('finishOne', {rst : qq});
-                     });
+                    console.log('socket-getArea');
+                    clearTimeout(dbclick);
+                    var dbclick = setTimeout(function(){getAreaAction(param, socket)}, 200);
                     /*
                     conn.count('blogqq', {area : ''}, function(err, rel){
                         socket.emit('socket-data', {rst : rel});
                     });*/
-                })
+                });
+
+                socket.on('getArea-stop', function(param){
+                    console.log('getArea-stop');
+                    impl.stop_socket_area(function(r){
+
+
+                    });
+                });
             });
 
             res.render('get',cutil.extend({

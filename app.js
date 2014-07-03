@@ -20,7 +20,7 @@ var app = express();
 
 var hbs = require('hbs');
 // all environments
-app.set('port', process.env.PORT || 3000);
+app.set('port', process.env.PORT || 3002);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'html');
 app.use(express.logger());
@@ -58,7 +58,7 @@ global.qqlist = [
 
 //console.log('开发环境：'+app.get('env'));
 // 生产环境
-//if ('production' === app.get('env')) {
+//if ('production' === app.get('env') || process.env.PORT) {
     global._debug = false;//测试状态
     global._local = false;//本地开发
 //};

@@ -84,12 +84,16 @@
     .controller('Get', ['$scope','$http','$compile',function($scope,$http,$compile){
             //appendJS('http://c.v.qq.com/vuserfolders?otype=json&callback=cb');
             //59.41.33.218
-            var socket = io.connect('http://localhost:3000');
-
-            socket.on('socket-data', function (data) {
+            var socket = io.connect('http://localhost:3002');
+            $$('#getArea').prop('disabled', false);
+            socket.on('getArea-finished', function (data) {
                 console.log(data);
+                $$('#getArea').prop('disabled', false);
+                setTimeout(function(){
+                    $$('#getArea').trigger('click');
+                }, 60000);
             });
-            socket.on('news', function (data) {
+            socket.on('getArea-catch', function (data) {
                 console.log(data);
             });
 
@@ -109,6 +113,12 @@
                 timenumber: 6
             };
 
+            $scope.Area = {
+                getnum : 13,
+                key : ''
+
+            };
+
             $scope.setAreaLen = 0;
 
             $scope.blog = blog;
@@ -119,20 +129,25 @@
                 switch(buttonValue){
 
                     case 'getArea':
-                        //e.target.disabled = true;
-                        socket.emit('getArea',{area : $scope.area});
+                        e.target.disabled = true;
+                        socket.emit('getArea',{area : $scope.Area});
                         return;
                         $http.get(AT.config.host+'/getAreaByQQ').success(function(r){
                             if(r.len){
                                 e.target.disabled = false;
                                 setTimeout(function(){
                                     $(e.target).trigger('click');
-                                }, 120000);
+                                }, 60000);
                                 $scope.setAreaLen += Number(r.len);
                                 $scope.$digest();
 
                             }
                         });
+                    break;
+
+                    case 'stopGetArea':
+                        $$('#getArea').prop('disabled', false);
+                        socket.emit('getArea-stop',{'stop':true});
                     break;
 
                     case 'p1start':
@@ -148,7 +163,6 @@
                         var jqp  = $(e.target).parent();
                         jqp.children().eq(0).prop('disabled', false);
                         clearTimeout(gstimer);
-
                     break;
 
                     case 'part3excel':

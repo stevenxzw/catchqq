@@ -9,7 +9,8 @@
         excelfn = require('./../func/exportExcel'),
         _debug = global._debug,
         qqlist = global.qqlist,
-        timer = null;
+        timer = null,
+        stopChangeArea = false;//停止获取QQ地区
 
     var xmlreader = require('xmlreader');
     var nodegrass = require('nodegrass');
@@ -106,6 +107,7 @@
 
                         }else{
                             var len = data.length;
+                            console.log(len);
                             //console.log('data:'+data);
                             that.getAreaByQQImpl(data, function(){
                                  //res.json(200, {rst:"success"});
@@ -115,7 +117,7 @@
                         }
                     }
                     //res.json(200, {rst:data});
-                }, 1, 20);
+                }, 1, 11);
 
         },
 
@@ -186,13 +188,15 @@
         },
 
         socket_area : function(param, fn ,fnOne, res){
-            var page = param.page|| 1, ps = param.ps || 20, that = this;
-            mongo.read('blogqq',{ "area":""}, function(err,data){
+            stopChangeArea = false;
+            var page = Number(param.page|| 1), ps = Number(param.getnum || 20), that = this, key = param.key || '';
+            mongo.read('blogqq',{ "area":key}, function(err,data){
                 if(!err){
                     if(data.length == 0){
                         fn && fn({'res':'nulldata'});
                     }else{
                         var len = data.length;
+                        console.log(len);
                         //console.log('data:'+data);
                         that.getAreaByQQImpl(data, function(){
                             //res.json(200, {rst:"success"});
@@ -201,13 +205,16 @@
                         }, fnOne);
                     }
                 }
-
             },page, ps);
 
         },
 
+        stop_socket_area : function(){
+            stopChangeArea = true;
+        },
+
         getAreaByQQImpl : function(lists, fun, fnOne){
-            if(lists.length>0){
+            if(lists.length>0 && !stopChangeArea){
                 var item = lists.shift(), that = this, qq = item['qq'];
                 this.getAreaByApi(qq, function(city){
                     city = city || '';

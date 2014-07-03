@@ -8,31 +8,31 @@
             <form class="form-horizontal" role="form">
                 <div class="form-group">
                     <label for="qq" class="col-sm-2 control-label">QQ</label>
-                    <div class="col-sm-10">
+                    <div class="col-sm-4">
                         <input type="text" class="form-control" ng-model="blog.qq" id="qq" placeholder="QQ">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="bn" class="col-sm-2 control-label">名称</label>
-                    <div class="col-sm-10">
+                    <div class="col-sm-4">
                         <input type="text" class="form-control" ng-model="blog.name" id="bn" placeholder="Blog名称">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="bid" class="col-sm-2 control-label">blogID</label>
-                    <div class="col-sm-10">
+                    <div class="col-sm-4">
                         <input  class="form-control" ng-model="blog.id" id="bid" placeholder="Blogid">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="timer" class="col-sm-2 control-label">延时</label>
-                    <div class="col-sm-10">
+                    <div class="col-sm-4">
                         <input  class="form-control" ng-model="blog.timer"  id="timer" placeholder="Timer">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="timenumber" class="col-sm-2 control-label">每次QQ取量</label>
-                    <div class="col-sm-10">
+                    <div class="col-sm-4">
                         <input type="text" class="form-control" ng-model="blog.timenumber" id="timenumber" placeholder="number">
                     </div>
                 </div>
@@ -56,8 +56,14 @@
         <div class="panel-body" >
             <form class="form-horizontal" role="form">
                 <div class="form-group">
+                    <label for="setAreaLen" class="col-sm-2 control-label">每次转换数</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" ng-model="Area.getnum" id="setAreaLen" placeholder="number">
+                    </div>
+                </div>
+                <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
-                        <button type="button" class="btn btn-primary" value="getArea">开始</button>
+                        <button type="button" class="btn btn-primary" value="getArea" id="getArea">开始</button>
                         <button type="button" class="btn btn-warning" value="stopGetArea">停止</button>
                         <span ng-model="setAreaLen">已完成:<% setAreaLen %>个</span>
                     </div>
@@ -75,19 +81,19 @@
             <form class="form-horizontal" role="form">
                 <div class="form-group">
                     <label for="barea" class="col-sm-2 control-label">地区</label>
-                    <div class="col-sm-10">
+                    <div class="col-sm-4">
                         <input  class="form-control" ng-model="blog.area" id="barea" placeholder="area">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="bids" class="col-sm-2 control-label">blogID</label>
-                    <div class="col-sm-10">
+                    <div class="col-sm-4">
                         <input  class="form-control" ng-model="blog.id" id="bids" placeholder="Blogid">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="bn" class="col-sm-2 control-label">blog名称</label>
-                    <div class="col-sm-10">
+                    <div class="col-sm-4">
                         <input type="text" class="form-control"  ng-model="blog.name" id="bname" placeholder="Blog名称">
                     </div>
                 </div>
