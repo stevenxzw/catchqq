@@ -86,13 +86,15 @@
             //59.41.33.218
             var socket = io.connect(AT.config.host);
             //var socket = io.connect('http://localhost:3002');
-            socket.on('ingetpage', function (data) {
-                console.log('in-----');
-
-            });
             $$('#getArea').prop('disabled', false);
             socket.on('getArea-finished', function (data) {
-                console.log(data);
+                if(data.rst.res === 'try-catch'){
+                    $scope.Area.msg = '异常，try-catch';
+                    $scope.$digest();
+                }else{
+                    $scope.succ = '完成QQ：'+data.qq+'-area:'+data.city;
+                }
+                $scope.$digest();
                 $$('#getArea').prop('disabled', false);
                 setTimeout(function(){
                     $$('#getArea').trigger('click');
@@ -120,8 +122,9 @@
 
             $scope.Area = {
                 getnum : 13,
-                key : ''
-
+                key : '',
+                msg : '',
+                succ : ''
             };
 
             $scope.setAreaLen = 0;

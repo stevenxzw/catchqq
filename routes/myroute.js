@@ -18,6 +18,33 @@
         host : _debug ? 'http://localhost:3002':'http://arcane-escarpment-5810.herokuapp.com'
     };
 
+    var io = global.io, dbclick = null, tt  = +new Date;
+    function getAreaAction(param, socket){
+        console.log('socket-getArea-action');
+        impl.socket_area(param.area, function(result){
+            socket.emit('getArea-finished', {rst : result});
+        }, function(d){
+            //console.log('emit finishOne');
+            socket.emit('finishOne', {rst : d});
+        });
+    }
+    io.sockets.on('connection', function (socket) {
+        //socket.emit('ingetpage');
+        socket.on('getArea', function(param){
+            console.log('socket-getArea');
+            clearTimeout(dbclick);
+            var dbclick = setTimeout(function(){getAreaAction(param, socket)}, 200);
+        });
+
+        socket.on('getArea-stop', function(param){
+            console.log('getArea-stop');
+            impl.stop_socket_area(function(r){
+
+
+            });
+        });
+    });
+
     var routes = {
         '/' :[false, function(req, res){
             res.render('index',{
@@ -25,37 +52,6 @@
         }],
 
         '/get' : function(req, res){
-            var io = global.io, dbclick = null;
-            function getAreaAction(param, socket){
-                console.log('socket-getArea-action');
-                impl.socket_area(param.area, function(result){
-                    socket.emit('getArea-finished', {rst : result});
-                }, function(qq){
-                    //console.log('emit finishOne');
-                    socket.emit('finishOne', {rst : qq});
-                });
-            }
-            io.sockets.on('connection', function (socket) {
-                socket.emit('ingetpage');
-                socket.on('getArea', function(param){
-                    console.log('socket-getArea');
-                    clearTimeout(dbclick);
-                    var dbclick = setTimeout(function(){getAreaAction(param, socket)}, 200);
-                    /*
-                    conn.count('blogqq', {area : ''}, function(err, rel){
-                        socket.emit('socket-data', {rst : rel});
-                    });*/
-                });
-
-                socket.on('getArea-stop', function(param){
-                    console.log('getArea-stop');
-                    impl.stop_socket_area(function(r){
-
-
-                    });
-                });
-            });
-
             res.render('get',cutil.extend({
                 title:"获取数据"}, defaultConfig));
         },

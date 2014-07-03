@@ -138,7 +138,7 @@
             });
         },
 
-        getAreaByApi : function(qq, fn){
+        getAreaByApi : function(qq, fn, fun){
             console.log(qq);
             nodegrass.get("http://qq.ico.la/api/qq="+qq+"&format=json",function(data,status,headers){
                 console.log(data);
@@ -155,6 +155,8 @@
                             }
                         }
                     } catch (e) {
+                        fun('try-catch');//停止运行
+                        city = 'try-catch';
                         console.log(e.name + ": " + e.message);
                     }
 
@@ -204,9 +206,12 @@
                         var len = data.length;
                         console.log(len);
                         //console.log('data:'+data);
-                        that.getAreaByQQImpl(data, function(){
+                        that.getAreaByQQImpl(data, function(r){
                             //res.json(200, {rst:"success"});
-                            fn && fn({'res': 'success'});
+                            if(r && r==='try-catch'){
+                                that.stop_socket_area();
+                            }
+                            fn && fn({'res': r||'success'});
                             //res.send('<div>获取完成</div>');
                         }, fnOne);
                     }
@@ -223,13 +228,14 @@
             if(lists.length>0 && !stopChangeArea){
                 var item = lists.shift(), that = this, qq = item['qq'];
                 this.getAreaByApi(qq, function(city){
+                    if(city === 'try-catch') return;
                     city = city || '';
                     mongo.update('blogqq', {qq:qq}, {$set:{'area':city}}, function(r){
                         if(lists.length == 0){
                             fun &fun();
                         }else{
                             //console.log('fnOne');
-                            fnOne && fnOne(qq);
+                            fnOne && fnOne({qq:qq, city : city});
                             setTimeout(function(){
                                 that.getAreaByQQImpl(lists, fun, fnOne);
                             },1000)
@@ -237,7 +243,7 @@
                     })
 
 
-                });
+                }, fun/*处理抛异常*/);
             }else{
                 fun &fun();
             }

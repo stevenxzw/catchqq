@@ -59,14 +59,17 @@
                     <label for="setAreaLen" class="col-sm-2 control-label">每次转换数</label>
                     <div class="col-sm-4">
                         <input type="text" class="form-control" ng-model="Area.getnum" id="setAreaLen" placeholder="number">
+
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
                         <button type="button" class="btn btn-primary" value="getArea" id="getArea">开始</button>
                         <button type="button" class="btn btn-warning" value="stopGetArea">停止</button>
-                        <span ng-model="setAreaLen">已完成:<% setAreaLen %>个</span>
+                        <span ng-model="setAreaLen">已完成:<% setAreaLen %>个</span> <span class="alert alert-danger" role="alert"  ng-model="Area.msg"><% Area.msg %></span>
+                        <span class="alert alert-success" role="alert" ng-model="Area.succ"><% Area.succ %></span>
                     </div>
+
                 </div>
             </form>
 
