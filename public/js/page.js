@@ -94,7 +94,8 @@
                     $scope.Area.msg = '异常，try-catch';
                     $scope.$digest();
                 }else{
-                    $scope.succ = '完成QQ：'+data.qq+'-area:'+data.city;
+                    $scope.setAreaLen++;
+                    //$scope.succ = '完成QQ：'+data.qq+'-area:'+data.city;
                 }
                 $scope.$digest();
                 $$('#getArea').prop('disabled', false);
@@ -106,8 +107,11 @@
                 console.log(data);
             });
 
-            socket.on('finishOne', function(){
-                //console.log('in finishOne');
+            socket.on('finishOne', function(re){
+                console.log('in finishOne');
+
+                data = re.rst;
+                $scope.Area.succ = '完成QQ：'+data.qq+'--地区:'+data.city;
                 $scope.setAreaLen++;
                 $scope.$digest();
             })
@@ -123,7 +127,7 @@
             };
 
             $scope.Area = {
-                getnum : 13,
+                getnum : 12,
                 key : '',
                 msg : '',
                 succ : ''

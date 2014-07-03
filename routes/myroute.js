@@ -139,6 +139,12 @@
             });
         },
 
+        '/countArea' : function(req, res){
+            conn.count('blogqq', {area: {$ne: ""}}, function(err, rel){
+                res.json(200, {num : rel});
+            });
+        },
+
         '/socket' : function(req, res){
                 res.render('socket',{
                     title:"socket"});

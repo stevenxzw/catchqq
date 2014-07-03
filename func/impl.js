@@ -139,21 +139,24 @@
         },
 
         getAreaByApi : function(qq, fn, fun){
-            console.log(qq);
             nodegrass.get("http://qq.ico.la/api/qq="+qq+"&format=json",function(data,status,headers){
                 console.log(data);
                 var city = '';
                 if(data && data.indexOf('<script') !== 0){
                     try {
                         data = JSON.parse(data);
+                        //console.log('ones---');
                         var country =  cutil.replaceAll(cutil.trim(data.country), /未知/gi, ''),
                             state =  cutil.replaceAll(cutil.trim(data.state), /未知/gi, '');
                         city =  cutil.replaceAll(cutil.trim(data.city), /未知/gi, '');
                         if(city || country || state){
+                            //console.log(city);
                             if(city === ''|| city ==='未知' || city === '-'){
                                 city = country+' '+state;
                             }
+
                         }
+                        //console.log('country:'+country+'---state:'+state+'---city:'+city);
                     } catch (e) {
                         fun('try-catch');//停止运行
                         city = 'try-catch';
@@ -229,7 +232,7 @@
                 var item = lists.shift(), that = this, qq = item['qq'];
                 this.getAreaByApi(qq, function(city){
                     if(city === 'try-catch') return;
-                    city = city || '';
+                    city = city || '没记录';
                     mongo.update('blogqq', {qq:qq}, {$set:{'area':city}}, function(r){
                         if(lists.length == 0){
                             fun &fun();
@@ -238,7 +241,7 @@
                             fnOne && fnOne({qq:qq, city : city});
                             setTimeout(function(){
                                 that.getAreaByQQImpl(lists, fun, fnOne);
-                            },1000)
+                            },300)
                         }
                     })
 
