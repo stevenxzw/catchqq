@@ -149,13 +149,14 @@
                         var country =  cutil.replaceAll(cutil.trim(data.country), /未知/gi, ''),
                             state =  cutil.replaceAll(cutil.trim(data.state), /未知/gi, '');
                         city =  cutil.replaceAll(cutil.trim(data.city), /未知/gi, '');
-                        if(city || country || state){
+                        //if(city || country || state){
                             //console.log(city);
-                            if(city === ''|| city ==='未知' || city === '-'){
-                                city = country+' '+state;
-                            }
+                        //    if(city === ''|| city ==='未知' || city === '-'){
+                        //        city = country+' '+state;
+                        //    }
 
-                        }
+                       // }
+                        city = country+' '+state+' '+city;
                         //console.log('country:'+country+'---state:'+state+'---city:'+city);
                     } catch (e) {
                         fun('try-catch');//停止运行
