@@ -204,7 +204,7 @@
                         $http.get(src).success(function(r){
                             $scope.searchArea.num = r.num;
                             $scope.searchArea.show = true;
-                            $scope.$digest();
+                            //$scope.$digest();
                         });
                     break;
 
