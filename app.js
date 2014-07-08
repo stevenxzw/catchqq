@@ -88,6 +88,15 @@ var io = require('socket.io').listen(server);
 server.listen(app.get('port'));
 global.io = io;
 /*
+io.set('transports', [
+    'websocket'
+    , 'flashsocket'
+    , 'htmlfile'
+    , 'xhr-polling'
+    , 'jsonp-polling'
+]);
+*/
+/*
  io.sockets.on('connection', function (socket) {
  socket.emit('news', { hello: 'world' });
  socket.on('my other event', function (data) {
