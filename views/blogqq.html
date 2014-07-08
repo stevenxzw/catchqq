@@ -3,9 +3,19 @@
         <h3 class="panel-title">QQ列表:共{{allPage}}页 {{count}}条记录</h3>
     </div>
     <div class="panel-body" >
-        <ul class="pagination"  ng-repeat="page in pages">
-            <li><a href="/blogqq?pg=<% page %>"><% page %></a></li>
-        </ul>
+        <div class="btn-group">
+            <form class="navbar-form navbar-left" role="search" id="search" action="/blogqq" method="get">
+                <div class="form-group">
+                    <input type="text"  value="{{ps}}" name="ps"  class="form-control col-sm-1" placeholder="每页显示">
+                </div>
+                <div class="form-group">
+                    <input type="text" value="{{page}}" name="pg" class="form-control col-sm-1" placeholder="第几页">
+                </div>
+                <button type="submit" class="btn btn-primary">GO</button>
+                <a type="submit" class="btn btn-info" href="/blogqq?pg=<%page+1%>&ps=<%ps%>">下一页</a>
+            </form>
+        </div>
+
         <div class="list-group"  selector="div">
             <div class="list-group-item">
                 <div  style="width:5%">Index</div>
@@ -26,13 +36,21 @@
                 <div style="width:18%" title="<% user.blogid %>"><% user.blogid|stringLen:30 %></div>
             </div>
         </div>
-
-        <ul class="pagination"  ng-repeat="page in pages">
-            <li><a href="/blogqq?pg=<% page %>&ps=<% ps %>"><% page %></a></li>
-        </ul>
+        <div class="btn-group">
+            <form class="navbar-form navbar-left" role="search" id="search" action="/blogqq" method="get">
+                <div class="form-group">
+                    <input type="text"  value="{{ps}}" name="ps"  class="form-control col-sm-1" placeholder="每页显示">
+                </div>
+                <div class="form-group">
+                    <input type="text" value="{{page}}" name="pg" class="form-control col-sm-1" placeholder="第几页">
+                </div>
+                <button type="submit" class="btn btn-primary">GO</button>
+                <a type="submit" class="btn btn-info" href="/blogqq?pg=<%page+1%>&ps=<%ps%>">下一页</a>
+            </form>
+        </div>
     </div>
 </div>
 
 <script>
-    var users = JSON.parse('{{{json users}}}'), ps = '{{ps}}', pages = JSON.parse('{{{json pages}}}');
+    var users = JSON.parse('{{{json users}}}'), ps = '{{ps}}',page='{{page}}', pages = JSON.parse('{{{json pages}}}');
 </script>

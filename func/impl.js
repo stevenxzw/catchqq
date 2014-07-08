@@ -63,7 +63,7 @@
         saveBlogQQ : function(lists, blogid,blogName, fn){
             if(lists.length>0){
                 var item = lists.shift(), that = this;
-                mongo.read('blogqq', {qq:item.uin}, function(err, r){
+                mongo.read('blogqq', {qq:item.uin, blogid:blogid}, function(err, r){
                     if(!err){
                         if(r.length>0){
                             //var row = r[0];
@@ -148,14 +148,15 @@
                         //console.log('ones---');
                         var country =  cutil.replaceAll(cutil.trim(data.country), /未知/gi, ''),
                             state =  cutil.replaceAll(cutil.trim(data.state), /未知/gi, '');
-                        city =  cutil.replaceAll(cutil.trim(data.city), /未知/gi, '');
-                        if(city || country || state){
+                        city =  cutil.replaceAll(cutil.trim(data.city), /未知/gi, '').replace('&gt;',' ').replace('-','');
+                        //if(city || country || state){
                             //console.log(city);
-                            if(city === ''|| city ==='未知' || city === '-'){
-                                city = country+' '+state;
-                            }
+                        //    if(city === ''|| city ==='未知' || city === '-'){
+                        //        city = country+' '+state;
+                        //    }
 
-                        }
+                       // }
+                        city = country+' '+state+(city ? ('-'+city):'');
                         //console.log('country:'+country+'---state:'+state+'---city:'+city);
                     } catch (e) {
                         fun('try-catch');//停止运行
