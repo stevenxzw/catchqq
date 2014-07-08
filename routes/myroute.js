@@ -99,7 +99,7 @@
                 if(rel < ps) ps = rel;
                 conn.read('blogqq','', function(err,data){
                     res.render('blogqq',{
-                        title:"qq列表",users:data,allPage:allpage, count:rel, pages:pages,ps:ps});
+                        title:"qq列表",users:data,allPage:allpage, count:rel, pages:pages,ps:ps, page:page});
                 }, page, ps);
             })
 
@@ -131,6 +131,24 @@
             var param = cutil.getHttpRequestParams(req);
             impl.toExcel( req, res, param);
 
+        },
+
+        '/excelcount' : function(req, res){
+            var param = cutil.getHttpRequestParams(req);
+            var blogid  = param.id, blogname = param.name, area = param.area,des = {};
+            if(blogid) des['blogid'] = blogid;
+            if(blogname) des['blogname'] = blogname;
+
+            if(area){
+                if(area !== '全部')
+                    des['area'] = eval("/"+area+"/");
+            }
+            var filename = param.filename;
+            conn.count('blogqq', des, function(err, r){
+                if(!err){
+                    res.json(200, {num : r});
+                }
+            })
         },
 
         '/countnull' : function(req, res){

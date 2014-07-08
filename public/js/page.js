@@ -92,6 +92,7 @@
                 console.log(data);
                 if(data.rst.res === 'try-catch'){
                     $scope.Area.msg = '异常，try-catch';
+                    $scope.trycatch = true;
                     $scope.$digest();
                 }else{
                     $scope.setAreaLen++;
@@ -109,7 +110,6 @@
 
             socket.on('finishOne', function(re){
                 console.log('in finishOne');
-
                 data = re.rst;
                 $scope.Area.succ = '完成QQ：'+data.qq+'--地区:'+data.city;
                 $scope.setAreaLen++;
@@ -120,10 +120,10 @@
                 qq : '448530028',
                 id : '6c06bc1ae975b353c45c0d00',
                 name : '酷酷口语',
-                timer : 20000,
+                timer : 40000,
                 area : '广州',
                 num : 0,
-                timenumber: 6
+                timenumber: 24
             };
 
             $scope.Area = {
@@ -135,7 +135,16 @@
 
             $scope.setAreaLen = 0;
 
+            $scope.trycatch =  false;
+
             $scope.blog = blog;
+
+            $scope.searchArea = {
+
+                num : 0,
+
+                show : false
+            };
 
             $scope.itemClick = function(e, item) {
                 e.preventDefault();
@@ -188,6 +197,18 @@
 
                        // });
                     break;
+                    case 'part3count' :
+                        var param = "id="+blog.id+"&name="+blog.name+"&area="+blog.area;
+                        //var param = "id="+blog.id+"&name="+blog.name,
+                        src = AT.config.host+'/excelcount?'+param;
+                        $http.get(src).success(function(r){
+                            $scope.searchArea.num = r.num;
+                            $scope.searchArea.show = true;
+                            $scope.$digest();
+                        });
+                    break;
+
+
                 }
                 $scope.$emit('haha', function(){
 
@@ -214,7 +235,7 @@ function getQQ(blog, fn){
     //blogid = '6c06bc1ac125aa5305030e00',//文章或者博客id
         blogid = blog.id,
         blogName=blog.name,//blog名称
-        ip = '192.168.1.188',//我的IP
+        ip = '192.168.1.144',//我的IP
         delayTime = blog.timer,//延迟时间1000表示1秒
         timenumber = blog.timenumber;//每次取访客量
     //http://192.168.1.112/init/tables 初如数据表
@@ -271,7 +292,7 @@ function getQQ(blog, fn){
 
     function send(data){
         var d = JSON.stringify(data);
-        //appendJS('http://'+ip+':3000/api/sendqq?q='+d, function(){
+        //appendJS('http://'+ip+':3002/api/sendqq?q='+d, function(){
         appendJS('http://arcane-escarpment-5810.herokuapp.com/api/sendqq?q='+d, function(){
             console.log('save ok');
         }, function(){
