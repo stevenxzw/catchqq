@@ -98,10 +98,7 @@ io.set('transports', [
 
      io.sockets.on('connection', function (socket) {
          socket.emit('news', { hello: 'world' });
-         socket.on('listenevent', function (data) {
-             console.log(data);
-             socket.emit('eventback', { e: 'eventback' });
-         });
+
      });
 
 var myroute = require('./routes/myroute').routefn;
