@@ -29,6 +29,49 @@
             }
         },
 
+        ToJson : function(req, res, param){
+            var blogid  = param.id, blogname = param.name, area = param.area,des = {};
+            if(blogid) des['blogid'] = blogid;
+            if(blogname) des['blogname'] = blogname;
+
+            if(area){
+                if(area !== '全部')
+                    des['area'] = eval("/"+area+"/");
+            }
+            mongo.read('blogqq', des, function(err, r){
+                if(!err){
+                    res.json(200, {res :r});
+                }else{
+                    res.json(200, {err : 'error'});
+                }
+                //excelfn.exportExcel(req, res);
+            });
+
+        },
+
+        infoByQQ : function(req, res, param){
+            var qq = param.qq;
+            if(qq){
+                mongo.read('blogqq', {qq:Number(qq)}, function(err, r){
+                    if(!err){
+                        res.json(200, {result : r});
+                    }else{
+                        res.json(200, {result : 'err'});
+
+                    }
+                })
+/*
+                mongo.update('blogqq', {qq:2366355433}, {$set:{'area':'广东 广州'}}, function(r){
+                    console.log(arguments);
+
+                });
+                */
+            }else{
+
+                res.send('请输入QQ号');
+            }
+        },
+
         toExcel : function(req, res, param){
             var blogid  = param.id, blogname = param.name, area = param.area,des = {};
             if(blogid) des['blogid'] = blogid;
@@ -76,7 +119,7 @@
                         }else{
                             //that.getAreaByApi(item.uin, function(result){
                                 mongo.add('blogqq', {
-                                    qq :item.uin||item.qq,
+                                    qq :item.uin||item.qq+'',
                                     name : item.name,
                                     blogid : blogid,
                                     blogname:blogName,
@@ -230,7 +273,7 @@
 
         getAreaByQQImpl : function(lists, fun, fnOne){
             if(lists.length>0 && !stopChangeArea){
-                var item = lists.shift(), that = this, qq = item['qq'];
+                var item = lists.shift(), that = this, qq = Number(item['qq']);
                 this.getAreaByApi(qq, function(city){
                     if(city === 'try-catch') return;
                     city = city || '没记录';

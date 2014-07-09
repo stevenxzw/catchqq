@@ -53,7 +53,7 @@
         update : function(table, condition, items, fn){
             db.collection(table || 'test1').update(condition || {id:"xiaoming2"}, items || {$set:{'acount':{a:1}}}, function(err) {
                 if (err) throw err;
-                fn && fn();
+                fn && fn(err);
             });
 
         },
