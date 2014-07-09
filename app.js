@@ -86,7 +86,7 @@ var server = http.createServer(app);
 var io = require('socket.io').listen(server);
 server.listen(app.get('port'));
 global.io = io;
-/*
+
 io.set('transports', [
     'websocket'
     , 'flashsocket'
@@ -94,7 +94,7 @@ io.set('transports', [
     , 'xhr-polling'
     , 'jsonp-polling'
 ]);
-*/
+
 
      //io.sockets.on('connection', function (socket) {
      //    socket.emit('news', { hello: 'world' });

@@ -91,13 +91,21 @@
                 console.log('getArea-finished');
                 console.log(data);
                 if(data.rst.res === 'try-catch'){
-                    $scope.Area.msg = '异常，try-catch';
+                    $scope.Area.msg = '异常，IP被封';
                     $scope.trycatch = true;
                     $scope.$digest();
                 }else{
                     $scope.setAreaLen++;
                     //$scope.succ = '完成QQ：'+data.qq+'-area:'+data.city;
                 }
+                setTimeout(function(){
+                    $scope.Area.loading = false;
+                    $scope.Area.succ = '';
+                    $scope.$digest();
+                }, 3000);
+                $scope.Area.finish += 1;
+                $scope.Area.progress = ($scope.Area.finish/ $scope.Area.getnum*100).toFixed(0);
+                $scope.Area.progressp = $scope.Area.progress+'%';
                 $scope.$digest();
                 $$('#getArea').prop('disabled', false);
                 setTimeout(function(){
@@ -113,6 +121,10 @@
                 data = re.rst;
                 $scope.Area.succ = '完成QQ：'+data.qq+'--地区:'+data.city;
                 $scope.setAreaLen++;
+                $scope.Area.loading = true;
+                $scope.Area.finish += 1;
+                $scope.Area.progress = ($scope.Area.finish/ $scope.Area.getnum*100).toFixed(0);
+                $scope.Area.progressp = $scope.Area.progress+'%';
                 $scope.$digest();
             })
 
@@ -130,7 +142,11 @@
                 getnum : 12,
                 key : '',
                 msg : '',
-                succ : ''
+                succ : '',
+                loading : false,
+                progress : 0,
+                finish : 0,
+                progressp : '0%'
             };
 
             $scope.setAreaLen = 0;
@@ -153,6 +169,10 @@
 
                     case 'getArea':
                         e.target.disabled = true;
+                        //$scope.Area.loading = true;
+                        $scope.Area.finish = 0;
+                        $scope.Area.progress = 0;
+                        $scope.Area.progressp = '0%';
                         socket.emit('getArea',{area : $scope.Area});
                         return;
                         $http.get(AT.config.host+'/getAreaByQQ').success(function(r){

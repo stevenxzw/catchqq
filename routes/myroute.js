@@ -104,7 +104,9 @@
                 if(rel < ps) ps = rel;
                 conn.read('blogqq','', function(err,data){
                     res.render('blogqq',{
-                        title:"qq列表",users:data,allPage:allpage, count:rel, pages:pages,ps:ps, page:page});
+                        title:"qq列表",users:data,allPage:allpage, count:rel, pages:pages,ps:ps,
+                        prePage : page-1 < 1 ?1:page-1,
+                        page:page, nextPage: page+1 > allpage ? allpage : page+1});
                 }, page, ps);
             })
 
