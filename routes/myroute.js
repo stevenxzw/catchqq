@@ -112,6 +112,21 @@
 
         }],
 
+        '/infoByQQ' : function(req, res){
+            var conn = require('./../func/mongo-skin').skin;
+            var param = cutil.getHttpRequestParams(req);
+            if(param.qq){
+                conn.read('blogqq', {qq:param.qq}, function(err, r){
+                    if(!err){
+                        res.json(200, {result : r});
+                    }
+                })
+            }else{
+
+                res.send('请输入QQ号');
+            }
+        },
+
         '/addTohero' : function(list){
             conn.count('blogqq', '', function(err, rel){
                 conn.read('blogqq','', function(err,data){
@@ -160,13 +175,14 @@
 
         '/countnull' : function(req, res){
             conn.count('blogqq', {area : ''}, function(err, rel){
-                res.json(200, {num : rel});
+                res.send('地区为空的QQ有：'+rel);
+                //res.json(200, {num : rel});
             });
         },
 
         '/countArea' : function(req, res){
             conn.count('blogqq', {area: {$ne: ""}}, function(err, rel){
-                res.json(200, {num : rel});
+                res.send('有地区QQ有：'+rel);
             });
         },
 
