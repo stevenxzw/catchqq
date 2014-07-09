@@ -96,10 +96,10 @@ io.set('transports', [
 ]);
 */
 
-     io.sockets.on('connection', function (socket) {
-         socket.emit('news', { hello: 'world' });
+     //io.sockets.on('connection', function (socket) {
+     //    socket.emit('news', { hello: 'world' });
 
-     });
+     //});
 
 var myroute = require('./routes/myroute').routefn;
 myroute.globalRoute(app);
