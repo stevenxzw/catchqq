@@ -99,7 +99,10 @@ io.set('transports', [
      io.sockets.on('connection', function (socket) {
          socket.on('getenv', function(){
 
-             socket.emit('sendenv', {env:app.get('env')});
+             socket.emit('sendenv', {env:app.get('env'),
+                port : process.env.PORT,
+                 setting : app.settings
+             });
 
          });
 
