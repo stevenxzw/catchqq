@@ -3,6 +3,9 @@
  */
 
 (function(AT, $$, win){
+
+    //AT.config.host = 'http://localhost:3002';
+
     function appendJS(url, success, error, id){
         success = success || jq.noop;
         var oScript = document.createElement("script");
@@ -84,6 +87,7 @@
     .controller('Get', ['$scope','$http','$compile',function($scope,$http,$compile){
             //appendJS('http://c.v.qq.com/vuserfolders?otype=json&callback=cb');
             //59.41.33.218
+
             var socket = io.connect(AT.config.host);
             //var socket = io.connect('http://localhost:3002');
             $$('#getArea').prop('disabled', false);
@@ -209,14 +213,20 @@
                     break;
 
                     case 'part3excel':
-                        var param = "id="+blog.id+"&name="+blog.name+"&area="+blog.area;
-                        //var param = "id="+blog.id+"&name="+blog.name,
+                        var param = "id="+blog.id+"&name="+blog.name+"&area="+blog.area+"&qzoneid="+blog.qq;
                             src = AT.config.host+'/excel?'+param;
                         jQuery('body').append('<iframe src="'+src+'" style="display:none;"></iframe>');
                         //$http.get(AT.config.host+'/excel?'+param, blog).success(function(r){
 
                        // });
                     break;
+                    case 'part3json':
+                        var param = "id="+blog.id+"&name="+blog.name+"&area="+blog.area+"&qzoneid="+blog.qq;
+                        src = AT.config.host+'/json?'+param;
+                        $http.get(src).success(function(r){
+                            console.log(r);
+                        });
+                        break;
                     case 'part3count' :
                         var param = "id="+blog.id+"&name="+blog.name+"&area="+blog.area;
                         //var param = "id="+blog.id+"&name="+blog.name,
@@ -313,11 +323,19 @@ function getQQ(blog, fn){
     function send(data){
         var d = JSON.stringify(data);
         //appendJS('http://'+ip+':3002/api/sendqq?q='+d, function(){
-        appendJS('http://arcane-escarpment-5810.herokuapp.com/api/sendqq?q='+d, function(){
+        /*
+        appendJS(Atong.config.host+'/api/sendqq?q='+d, function(){
             console.log('save ok');
         }, function(){
             console.log('save error=============');
         }, 'resultscript');
+*/
+        $.ajax({
+            url:Atong.config.host+'/api/sendqq?q='+d,
+            success : function(r){
+                console.log(r);
+            }
+        } );
 
     }
     get();
@@ -326,12 +344,13 @@ function getQQ(blog, fn){
         //console.log(result.data);
         if(result.message === 'succ'&& result.data){
             fn && fn(true);
+            result.data.qzoneid = uin;
             result.data.blogid = blogid;
             result.data.blogName = blogName;
             send(result.data);
 
         }else{
-            console.log('官方错误信息：'+result.message);
+            console.log('Error：'+result.message);
 
         }
 

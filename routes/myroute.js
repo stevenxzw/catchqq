@@ -116,13 +116,12 @@
             var conn = require('./../func/mongo-skin').skin;
             var param = cutil.getHttpRequestParams(req);
             if(param.qq){
-                conn.read('blogqq', {qq:param.qq}, function(err, r){
+                conn.read('blogqq', {qq:Number(param.qq)}, function(err, r){
                     if(!err){
                         res.json(200, {result : r});
                     }
                 })
             }else{
-
                 res.send('请输入QQ号');
             }
         },
@@ -152,6 +151,11 @@
         '/excel' : function(req, res){
             var param = cutil.getHttpRequestParams(req);
             impl.toExcel( req, res, param);
+
+        },
+        '/json' : function(req, res){
+            var param = cutil.getHttpRequestParams(req);
+            impl.ToJson( req, res, param);
 
         },
 

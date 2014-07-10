@@ -21,7 +21,7 @@
 
             var info = JSON.parse(param.q);
             if(info.list){
-                this.saveBlogQQ(info.list,info.blogid,info.blogName, function(){
+                this.saveBlogQQ(info.list,info.blogid,info.blogName,info.qzoneid, function(){
                     res.json(200, {save:'success'});
                 });
             }else{
@@ -30,9 +30,10 @@
         },
 
         ToJson : function(req, res, param){
-            var blogid  = param.id, blogname = param.name, area = param.area,des = {};
+            var blogid  = param.id, blogname = param.name, area = param.area,des = {}, qzoneid = param.qzoneid;
             if(blogid) des['blogid'] = blogid;
             if(blogname) des['blogname'] = blogname;
+            if(qzoneid) des['qzoneid'] = qzoneid;
 
             if(area){
                 if(area !== '全部')
@@ -73,10 +74,10 @@
         },
 
         toExcel : function(req, res, param){
-            var blogid  = param.id, blogname = param.name, area = param.area,des = {};
+            var blogid  = param.id, blogname = param.name, area = param.area,des = {}, qzoneid = param.qzoneid;
             if(blogid) des['blogid'] = blogid;
             if(blogname) des['blogname'] = blogname;
-
+            if(qzoneid) des['qzoneid'] = qzoneid;
             if(area){
                 if(area !== '全部')
                     des['area'] = eval("/"+area+"/");
@@ -103,7 +104,7 @@
             }
 
         },
-        saveBlogQQ : function(lists, blogid,blogName, fn){
+        saveBlogQQ : function(lists, blogid,blogName,qzoneid, fn){
             if(lists.length>0){
                 var item = lists.shift(), that = this;
                 mongo.read('blogqq', {qq:item.uin, blogid:blogid}, function(err, r){
@@ -115,18 +116,20 @@
                             //})
                             //res.json(200, )
                             console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<---重复------------------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
-                            that.saveBlogQQ(lists,blogid,blogName, fn);
+                            that.saveBlogQQ(lists,blogid,blogName,qzoneid, fn);
                         }else{
                             //that.getAreaByApi(item.uin, function(result){
                                 mongo.add('blogqq', {
-                                    qq :item.uin||item.qq+'',
+                                    qq :item.uin||item.qq,
                                     name : item.name,
                                     blogid : blogid,
                                     blogname:blogName,
+                                    qzoneid : qzoneid,
+                                    addTime : +new Date,
                                     area : '',
                                     time :item.time
                                 }, function(r){
-                                    that.saveBlogQQ(lists,blogid,blogName, fn);
+                                    that.saveBlogQQ(lists,blogid,blogName,qzoneid, fn);
                                 })
                             //})
 
