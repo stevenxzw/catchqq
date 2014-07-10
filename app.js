@@ -25,12 +25,16 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'html');
 app.use(express.logger());
 // 一个简单的 logger
-// 开发环境
-if ('development' === app.get('env')) {
+
+if (process.env.PORT) {//生产环境
+    global._debug = false;
+    global._local = false;
+}else{// 开发环境
     app.use(express.errorHandler());
     global._debug = true;//测试状态
     global._local = true;//本地开发
 }
+
 hbs.registerHelper('json', function(context) {
     return JSON.stringify(context);
 });
@@ -56,11 +60,7 @@ global.qqlist = [
 ];
 
 //console.log('开发环境：'+app.get('env'));
-// 生产环境
-//if ('production' === app.get('env') || process.env.PORT) {
-    global._debug = false;//测试状态
-    global._local = false;//本地开发
-//};
+
 app.set('title', 'catchQQ');
 
 app.use(express.cookieParser('123'));
@@ -99,7 +99,8 @@ io.set('transports', [
      io.sockets.on('connection', function (socket) {
          socket.on('getenv', function(){
 
-             socket.emit('sendenv', {env:app.get('env'),
+             socket.emit('sendenv', {
+                env:app.get('env'),
                 port : process.env.PORT,
                  setting : app.settings
              });

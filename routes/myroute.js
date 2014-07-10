@@ -89,6 +89,23 @@
             }, 1, 30);
         }],
 
+        '/exportOutqq' : function(req, res){
+            var param = cutil.getHttpRequestParams(req), cparam = {};
+            var pagesize = Number(param.pagesize) || 100, page = Number(param.page||1);
+            if(param.addTime){
+                cparam['addTime'] = '{ $gt: '+param.addTime+'}';
+            }
+            if(param._id != 'undefined'){
+                //cparam['_id'] = param._id;
+            }
+            conn.read('blogqq',cparam, function(err,data){
+                if(!err){
+                    res.json(200, {res : data});
+                }else{
+                    res.json(200, {res : 'error'});
+                }
+            }, page, pagesize);
+        },
 
         '/blogqq' : [false, function(req, res){
             var conn = require('./../func/mongo-skin').skin;
