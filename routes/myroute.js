@@ -93,7 +93,8 @@
             var param = cutil.getHttpRequestParams(req), cparam = {};
             var pagesize = Number(param.pagesize) || 100, page = Number(param.page||1);
             if(param.addTime){
-                cparam['addTime'] = '{ $gt: '+param.addTime+'}';
+                cparam['addTime'] = {};
+                cparam['addTime']['$gt'] = Number(param.addTime);
             }
             if(param._id != 'undefined'){
                 //cparam['_id'] = param._id;
@@ -112,14 +113,15 @@
             var param = cutil.getHttpRequestParams(req);
             var ps = Number(param.ps) || 100, page = Number(param.pg);
             conn.count('blogqq', '', function(err, rel){
-
                 var allpage = Math.ceil(rel/ps), pages = [];
                 if(!page) page = 1;
                 if(page > allpage) page = allpage;
                 for(var i=1;i<=allpage;i++)
                     pages.push(i);
                 if(rel < ps) ps = rel;
-                conn.read('blogqq','', function(err,data){
+                var p  = {};
+                p['addTime'] = {$ne:''};
+                conn.read('blogqq',p, function(err,data){
                     res.render('blogqq',{
                         title:"qq列表",users:data,allPage:allpage, count:rel, pages:pages,ps:ps,
                         prePage : page-1 < 1 ?1:page-1,
@@ -198,6 +200,45 @@
             conn.count('blogqq', {area : ''}, function(err, rel){
                 res.send('地区为空的QQ有：'+rel);
                 //res.json(200, {num : rel});
+            });
+        },
+        '/getMax' : function(req, res){
+            var param = cutil.getHttpRequestParams(req);
+            if(param.t){
+                conn.count('blogqq', {addTime :{$gt:Number(param.t)}}, function(err, rel){
+                    res.send('大于'+param.t+'的记录数：'+rel);
+                });
+            }else
+                res.send('查询大于某时间的记录数，请带t参数如：t=1405003687393');
+
+        },
+
+        '/setAddTime' : function(req, res){
+            var param = cutil.getHttpRequestParams(req), t = param.t || 1404903687393, page = param.p||1, times = 0;
+
+                        function setTime(){
+                            if(times < 30000){
+                                conn.update('blogqq', {'addTime' :null},{$set:{'addTime':t}}, function(rel){
+                                    if(times<30000){
+                                        times++;
+                                        console.log('完成：'+times);
+                                        setTime();
+
+                                    }else{
+
+                                        res.send('已完成:'+times);
+                                    }
+                                });
+                            }else
+                                res.send(200, '已没有空addTime');
+                        }
+            setTime();
+
+        },
+
+        '/addTimenull' : function(req, res){
+            conn.count('blogqq', {'addTime' :null}, function(err,rel){
+                res.send('没有addTime:'+rel);
             });
         },
 

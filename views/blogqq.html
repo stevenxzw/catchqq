@@ -20,19 +20,21 @@
         <div class="list-group"  selector="div">
             <div class="list-group-item">
                 <div  style="width:5%">Index</div>
-                <div>QQ</div>
+                <div style="width:12%">QQ</div>
                 <div>likename</div>
-                <div>时间</div>
-                <div>文章名称</div>
+                <div  style="width:12%">访问时间</div>
+                <div  style="width:12%">添加时间</div>
+                <div style="width:10%">文章名称</div>
                 <div>地区</div>
                 <div style="width:18%">blogid</div>
             </div>
             <div  class="list-group-item" ng-repeat="user in users">
                 <div style="width:5%"><% $index+1%></div>
-                <div><% user.qq  %></div>
+                <div style="width:12%"><% user.qq  %></div>
                 <div title="<% user.name%>"><% user.name|stringLen|limitNull%></div>
-                <div><% user.time| time : 'yyyy-MM-dd'%></div>
-                <div><% user.blogname|limitNull%></div>
+                <div  style="width:12%"><% user.time%></div>
+                <div  style="width:12%"><% user.addTime%></div>
+                <div style="width:10%"><% user.blogname|limitNull%></div>
                 <div><% user.area|limitNull|stringLen:18 %></div>
                 <div style="width:18%" title="<% user.blogid %>"><% user.blogid|stringLen:30 %></div>
             </div>
