@@ -32,8 +32,8 @@
                 <div style="width:5%"><% $index+1%></div>
                 <div style="width:12%"><% user.qq  %></div>
                 <div title="<% user.name%>"><% user.name|stringLen|limitNull%></div>
-                <div  style="width:12%"><% user.time%></div>
-                <div  style="width:12%"><% user.addTime%></div>
+                <div  style="width:12%"><% user.time|time:'yyyy-MM-dd' %></div>
+                <div  style="width:12%"><% user.addTime|time:'yyyy-MM-dd' %></div>
                 <div style="width:10%"><% user.blogname|limitNull%></div>
                 <div><% user.area|limitNull|stringLen:18 %></div>
                 <div style="width:18%" title="<% user.blogid %>"><% user.blogid|stringLen:30 %></div>
