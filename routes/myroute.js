@@ -248,9 +248,8 @@
             });
         },
 
-        '/socket' : function(req, res){
-                res.render('socket',{
-                    title:"socket"});
+        '/login163' : function(req, res){
+                impl.login163();
         },
 
         /*----------------------初始化数据-------------------------*/

@@ -396,6 +396,79 @@
 
         },
 
+        login163 : function(){
+            //用户名 : *******
+            //密码 :------
+            var http=require("http");
+            var querystring=require("querystring");
+
+            /*
+            var contents=querystring.stringify({
+                savelogin:1,
+                password:"3262661",
+                url2:"http://mail.163.com/errorpage/err_163.htm",
+                username:"stevenxzw@163.com"
+            });
+
+*/
+
+            var contents=querystring.stringify({
+                pwd:"123456",
+                username:"admin"
+            });
+            var host = "atong.herokuapp.com";
+            var options={
+                host:host,
+                path:"/api/login",
+               // port : 3000,
+                method:"post",
+                headers:{
+                    "Content-Type":"application/x-www-form-urlencoded; charset=UTF-8",
+                    "Content-Length":contents.length,
+                    "Accept":"application/json, text/javascript, */*; q=0.01",
+                    "Accept-Language":"zh-cn",
+                    "Cache-Control":"no-cache",
+                    "Connection":"Keep-Alive",
+                    "Host":host,
+                    "Referer":"http://bbs.byr.cn/index",
+                    "User-Agent":"Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0; BOIE9;ZHCN)",
+                    "X-Requested-With":"XMLHttpRequest"
+                    }
+                };
+
+
+
+    var req=http.request(options,function(res){
+                res.setEncoding("utf8");
+                var headers=res.headers,resData='';
+                //console.log(headers);
+                var cookies=headers["set-cookie"];
+                ;
+                //cookies.forEach(function(cookie){
+                //    console.log(cookie);
+                //});
+            console.log(cookies[0]);
+                res.on("data",function(data){
+                    resData +=data;
+                    //console.log(data);
+                    options.Cookie = cookies[0];
+                    nodegrass.get("http://"+host+"/admin/users",function(data,status,headers){
+
+                        console.log(data);
+                   }, options);
+                });
+
+                // 在数据发送完毕后触发
+                res.on("end", function() {
+                    // querystring.parse功能: 就是解析...比如一个object会把它解析成object
+                    console.log(querystring.parse(resData));
+                });
+            });
+
+            req.write(contents);
+            req.end();
+        },
+
         //保存并setcookie
         saveHave : function(req, res){
             var params = cutil.getHttpRequestParams(req);
