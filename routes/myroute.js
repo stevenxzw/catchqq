@@ -7,6 +7,7 @@
     var _debug = global._debug ,
         initClass = require('./../func/initFun').initClass,
         impl = require('./../func/impl').Impl,
+        loginImpl = require('./../func/impl-login').ImplLogin,
         filter = require('./../func/filter').routerFilter,
         cutil = require('./../func/cutil').util,
         apiUser = require('./../API/user').apiUser,
@@ -250,6 +251,16 @@
 
         '/login163' : function(req, res){
                 impl.login163();
+        },
+
+        '/loginQQmail' : function(req, res){
+
+            loginImpl.qqmail(req, res);
+        },
+
+        '/qqmailCheck' : function(req, res){
+
+            loginImpl.qqmailcheck(req, res);
         },
 
         /*----------------------初始化数据-------------------------*/
