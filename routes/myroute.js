@@ -263,6 +263,24 @@
             loginImpl.qqmailcheck(req, res);
         },
 
+        '/sleep' : function(req, res){
+            var param = cutil.getHttpRequestParams(req);
+            var s = param.s;
+            if(!s){
+                s = 10;
+            }
+            var st = parseInt(s);
+            var start=new Date().getTime();
+            while(true) if(new Date().getTime()-start>st) break;
+            res.send('sleep:'+s);
+            console.log('sleep:'+s);
+        },
+
+        '/thread' : function(){
+            var threads_a_gogo= require('threads_a_gogo');
+
+        },
+
         /*----------------------初始化数据-------------------------*/
         '/init/tables' : [false, function(req, res){
             initClass.initTables(req, res);
