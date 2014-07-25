@@ -272,8 +272,14 @@
             var st = parseInt(s);
             var start=new Date().getTime();
             while(true) if(new Date().getTime()-start>st) break;
-            res.send('sleep:'+s);
+            //res.send('sleep:'+s);
             console.log('sleep:'+s);
+            var t = param.t || 10000;
+            setTimeout(function(){
+                res.send('timeout:'+t);
+                console.log('timeout:+'+t);
+            }, t)
+
         },
 
         '/thread' : function(){
