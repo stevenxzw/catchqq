@@ -2,9 +2,9 @@
  * Created by zhiwen on 14-7-2.
  */
 var nodeExcel = require('excel-export');
-exports.exportExcel = function(req, res, data, filename) {
+exports.exportExcel = function(req, res, data, filename, cols) {
     var conf ={};
-    conf.cols = [
+    conf.cols = cols || [
         {caption:'QQ', type:'string'},
         {caption:'likename', type:'string'},
         {caption:'地区', type:'string'},

@@ -84,6 +84,118 @@
 
 
     }])
+    .controller('areabyqs', ['$scope','$http','$compile',function($scope,$http,$compile){
+        var qq = localStorage.getItem('qq'), skey = localStorage.getItem('skey');
+        var obj = {
+            'qqlist': '154036777\n9874444',
+           // 'lists':[{ qq:"154036777", cb:"中国:广东:广州"},{ qq:"9874444", cb:"山东:日照"}],
+            'lists':[],
+            num : 0,
+            skey :skey || '@jVCjp2xFg',
+            kcode : '',
+            qq : qq || 154036777
+        };
+        function getGTK(str){
+            var hash = 5381;
+
+            for(var i = 0, len = str.length; i < len; ++i){
+                hash += (hash << 5) + str.charAt(i).charCodeAt();
+            }
+
+            return hash & 0x7fffffff;
+        }
+
+        $$('#p1start').prop('disabled', false);
+        $scope.obj = obj;
+        $scope.itemClick = function(e, item) {
+            e.preventDefault();
+            var buttonValue = e.target.value;
+            switch(buttonValue){
+
+                case 'p1start':
+                    e.target.disabled = true;
+                    var lists = obj.qqlist;
+
+                    if($.trim(lists)){
+                        var arrs = lists.split(obj.kcode||'\n');
+                        window.qq = $$.trim(obj.qq);
+                        window.gtk = getGTK($$.trim(obj.skey));
+                        localStorage.setItem("qq", window.qq);
+                        localStorage.setItem("skey",obj.skey);
+                        gets(arrs, function(){
+                            $$('#p1start').prop('disabled', false);
+                        });
+                    }
+                break;
+
+                case 'p1stop':
+                    $$('#p1start').prop('disabled', false);
+                break;
+
+                case 'p1export' :
+
+                    if(obj.lists.length){
+                        var jqform = $$('#eform');
+                        jqform.find('#lists').val(JSON.stringify(obj.lists));
+                        jqform.submit();
+                    }else{
+                        alert('没有数据！')
+                    }
+                    //jQuery('body').append('<iframe src="'+src+'" style="display:none;"></iframe>');
+                    //$http.post(AT.config.host+'/exportList', {lists:obj.lists}).success(function(r){
+
+                   // }).error(function(){});
+                break;
+            }
+        }
+        var unlogin = lock = false;
+        window['callback'] = function(r){
+            if(r.ret === 0){
+                var ls  = r.data, lists = obj.lists;
+                $.each(ls, function(i,item){
+                    var sdata = item.sData.resultData;
+                    $.each(sdata, function(j, it){
+                        if(it.NM === r.query){
+                            obj.num++;
+                            lists.push({qq: r.query, cb: it.CB||it.CA});
+                            $scope.$digest();
+                        }
+                    })
+                });
+            }else if(r.ret == -102){//未登录
+                unlogin = true;
+                //alert('请先登录')
+            }
+
+        }
+           function gets(ls, fn){
+               if(unlogin){
+                   alert('请先登录');
+                   return;
+               }
+
+               if(ls.length){
+                   var item = ls.shift();
+                   var uri = 'http://search.qzone.qq.com/cgi-bin/qzonesoso/cgi_qzonesoso_smart?uin=79186391&' +
+                       'search=154036777&entry=1&searchid=79186391_1406603025191_2287608951&g_tk=688011432';
+                   appendJS('http://search.qzone.qq.com/cgi-bin/qzonesoso/cgi_qzonesoso_smart?uin='+qq+'&search='+item+'&' +
+                       'entry=1&searchid='+qq+'_1406542609879_3773076217&g_tk='+gtk, function(r){
+                        setTimeout(function(){
+                            gets(ls, fn);
+                        }, 1000);
+
+                   }, function(){
+
+
+                   }, 'gqz');
+               }else{
+                   fn(true);
+               }
+
+           }
+
+
+    }])
     .controller('Get', ['$scope','$http','$compile',function($scope,$http,$compile){
             //appendJS('http://c.v.qq.com/vuserfolders?otype=json&callback=cb');
             //59.41.33.218
@@ -272,7 +384,7 @@ function getQQ(blog, fn){
 
     //可修改参数结束
 
-
+/*
     function appendJS(url, success, error, id){
         success = success || jq.noop;
         var oScript = document.createElement("script");
@@ -305,7 +417,7 @@ function getQQ(blog, fn){
         }
         document.getElementsByTagName('HEAD').item(0).appendChild(oScript);
     }
-
+*/
     function get(){
         appendJS('http://g.qzone.qq.com/cgi-bin/friendshow/cgi_get_visitor_single?uin='+uin+'&appid=311&blogid='+blogid+'&param='+blogid+'&ref=qzfeeds&beginNum=1&num='+timenumber+'&g_tk=1923002575&ptlang=2052', function(){
 
@@ -361,7 +473,38 @@ function getQQ(blog, fn){
 }
 
 
+function appendJS(url, success, error, id){
+    success = success || jq.noop;
+    var oScript = document.createElement("script");
+    oScript.type = "text/javascript";
+    oScript.src = url;
+    if (oScript.readyState) {
+        oScript.onreadystatechange = function() {
+            if (oScript.readyState == "loaded"
+                || oScript.readyState == "complete") {
+                oScript.onreadystatechange = null;
+                window.setTimeout(success, 10);
+                var script = document.getElementById(id);
+                document.getElementsByTagName('HEAD').item(0).removeChild(script);
+            }
+        };
+    } else {
+        oScript.onload = function() {
+            window.setTimeout(success, 10);
+            var script = document.getElementById(id);
+            document.getElementsByTagName('HEAD').item(0).removeChild(script);
+        };
+    }
 
+    if(id){
+        oScript.id = id;
+    }
+
+    oScript.onerror = function(){
+        (error || jq.noop)();
+    }
+    document.getElementsByTagName('HEAD').item(0).appendChild(oScript);
+}
 
 
 

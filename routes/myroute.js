@@ -12,6 +12,7 @@
         cutil = require('./../func/cutil').util,
         apiUser = require('./../API/user').apiUser,
         adminPage = require('./../func/adminPage').adminPage,
+        excelfn = require('./../func/exportExcel'),
         conn = require('./../func/mongo-skin.js').skin;
 
 
@@ -173,6 +174,31 @@
             impl.toExcel( req, res, param);
 
         },
+
+        '/exportList' : function(req, res){
+            var param = cutil.getHttpRequestParams(req),
+                lists = param.lists;
+            if(lists){
+                lists = JSON.parse(lists);
+                var data = [], cols = [
+                    {caption:'QQ', type:'string'},
+                    {caption:'地区', type:'string'}
+                ];
+                for(var i= 0,l=lists.length;i<l;i++){
+                    data.push([lists[i].qq, lists[i].cb]);
+                }
+                excelfn.exportExcel(req, res, data, '', cols);
+
+            }else{
+                res.send('没有数据!');
+            }
+
+            console.log(param);
+            //xcelfn.exportExcel(req, res, data, filename);
+            //impl.toExcel( req, res, param);
+
+        },
+
         '/json' : function(req, res){
             var param = cutil.getHttpRequestParams(req);
             impl.ToJson( req, res, param);
@@ -285,6 +311,11 @@
         '/thread' : function(){
             var threads_a_gogo= require('threads_a_gogo');
 
+        },
+
+        '/qzone' : function(req, res){
+            res.render('areabyqs',{
+                title:"查找QQ地区"});
         },
 
         /*----------------------初始化数据-------------------------*/

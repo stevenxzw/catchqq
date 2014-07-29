@@ -1,0 +1,85 @@
+<div ng-controller="areabyqs" selector="button" ngd-click="itemClick($event)">
+    <div >
+        <div class="panel panel-primary" id="part1">
+            <div class="panel-heading">
+                <h3 class="panel-title">获取QQ地区</h3>
+            </div>
+            <div class="panel-body" >
+                <form class="form-horizontal" role="form">
+                    <div class="form-group">
+                        <label for="qqs" class="col-sm-2 control-label">QQ</label>
+                        <div class="col-sm-4">
+                            <textarea class="form-control" ng-model="obj.qqlist" rows="3" id="qqs"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="kcode" class="col-sm-2 control-label">分格符</label>
+                        <div class="col-sm-4">
+                            <input  class="form-control" ng-model="obj.kcode" id="kcode" placeholder="默认用换行">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="qq" class="col-sm-2 control-label">登录QQ</label>
+                        <div class="col-sm-4">
+                            <input  class="form-control" ng-model="obj.qq" id="qq" placeholder="qq">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="skey" class="col-sm-2 control-label">skey</label>
+                        <div class="col-sm-4">
+                            <input  class="form-control" ng-model="obj.skey" id="skey" placeholder="skey">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button type="button" class="btn btn-primary" value="p1start" id="p1start">开始</button>
+                            <button type="button" class="btn btn-warning" value="p1stop">停止</button>
+                            <span ng-model="blog">完成:<% obj.num %></span>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="panel panel-success"  >
+        <div class="panel-heading">
+            <h3 class="panel-title">QQ列表</h3>
+
+        </div>
+
+        <div class="panel-body" >
+            <div class="btn-group">
+                <div>
+                    <button type="button" class="btn btn-primary" value="p1export">导出</button>
+                </div>
+            </div>
+            <div class="list-group"  selector="div">
+                <div class="list-group-item">
+                    <div  style="width:5%">Index</div>
+                    <div >QQ</div>
+                    <div>地区</div>
+
+                </div>
+                <div  class="list-group-item" ng-repeat="list in obj.lists">
+                    <div style="width:5%"><% $index+1%></div>
+                    <div><% list.qq  %></div>
+                    <div><% list.cb %></div>
+                </div>
+            </div>
+            <div class="btn-group">
+
+            </div>
+        </div>
+    </div>
+
+    <form method="post" action="/exportList" target="eframe" id="eform"  style="display:none;">
+        <input value="1" id="lists" type="text" name="lists">
+        <input type="submit" id="btn">
+    </form>
+    <iframe id="eframe" name="eframe" style="display:none;"></iframe>
+
+</div>
