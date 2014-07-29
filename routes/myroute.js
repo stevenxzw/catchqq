@@ -177,7 +177,7 @@
 
         '/exportList' : function(req, res){
             var param = cutil.getHttpRequestParams(req),
-                lists = param.lists;
+                lists = param.lists, area = param.earea;
             if(lists){
                 lists = JSON.parse(lists);
                 var data = [], cols = [
@@ -185,7 +185,8 @@
                     {caption:'地区', type:'string'}
                 ];
                 for(var i= 0,l=lists.length;i<l;i++){
-                    data.push([lists[i].qq, lists[i].cb]);
+                    if(area === '' || (lists[i].cb.indexOf(area)>-1))
+                        data.push([lists[i].qq, lists[i].cb]);
                 }
                 excelfn.exportExcel(req, res, data, '', cols);
 

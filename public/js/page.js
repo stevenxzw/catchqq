@@ -87,10 +87,11 @@
     .controller('areabyqs', ['$scope','$http','$compile',function($scope,$http,$compile){
         var qq = localStorage.getItem('qq'), skey = localStorage.getItem('skey');
         var obj = {
-            'qqlist': '154036777\n9874444',
+            'qqlist': '154036777\n1957719679\n9874444',
            // 'lists':[{ qq:"154036777", cb:"中国:广东:广州"},{ qq:"9874444", cb:"山东:日照"}],
             'lists':[],
             num : 0,
+            area : '',
             skey :skey || '@jVCjp2xFg',
             kcode : '',
             qq : qq || 154036777
@@ -137,6 +138,7 @@
                     if(obj.lists.length){
                         var jqform = $$('#eform');
                         jqform.find('#lists').val(JSON.stringify(obj.lists));
+                        jqform.find('#earea').val($$.trim(obj.area));
                         jqform.submit();
                     }else{
                         alert('没有数据！')
@@ -163,7 +165,7 @@
                     })
                 });
             }else if(r.ret == -102){//未登录
-                unlogin = true;
+                //unlogin = true;
                 //alert('请先登录')
             }
 
