@@ -35,6 +35,7 @@
                             <button type="button" class="btn btn-primary" value="p1start" id="p1start">开始</button>
                             <button type="button" class="btn btn-warning" value="p1stop">停止</button>
                             <span ng-model="blog">完成:<% obj.num %></span>
+                            <span class="alert alert-danger" role="alert"  ng-model="obj.msg" ng-show="errmsg"><% obj.msg %></span>
                         </div>
                     </div>
                 </form>

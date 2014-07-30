@@ -85,13 +85,31 @@
 
     }])
     .controller('areabyqs', ['$scope','$http','$compile',function($scope,$http,$compile){
-        var qq = localStorage.getItem('qq'), skey = localStorage.getItem('skey');
-        var obj = {
+        var qq = localStorage.getItem('qq'), skey = localStorage.getItem('skey'),
+            timer = null, maxTime = 500;
+        $scope.errmsg = false;
+            appendJS('http://apps.qq.com/app/yx/cgi-bin/show_fel?hc=8&lc=4&d=365633133&t='+(+new Date), function(r){
+                try {
+                    if (data0.err == '1026') {//已登录,取空间UID
+
+                    } else {
+                       alert('请先登录webQQ');
+                    }
+                } catch (e) {
+
+                }
+            }, function(){
+
+            }, 'appUin');
+
+            var obj = {
             'qqlist': '154036777\n1957719679\n9874444',
            // 'lists':[{ qq:"154036777", cb:"中国:广东:广州"},{ qq:"9874444", cb:"山东:日照"}],
             'lists':[],
             num : 0,
+            msg :'本次请求数已超'+maxTime+'次，暂停读取，30分钟后恢复',
             area : '',
+            ajaxTime : 0,
             skey :skey || '@jVCjp2xFg',
             kcode : '',
             qq : qq || 154036777
@@ -114,10 +132,13 @@
             switch(buttonValue){
 
                 case 'p1start':
-                    e.target.disabled = true;
+                    obj.ajaxTime  = 0;
+                    $scope.errmsg = false;
                     var lists = obj.qqlist;
-
+                    $scope.$digest();
+                    clearTimeout(timer);
                     if($.trim(lists)){
+                        e.target.disabled = true;
                         var arrs = lists.split(obj.kcode||'\n');
                         window.qq = $$.trim(obj.qq);
                         window.gtk = getGTK($$.trim(obj.skey));
@@ -130,6 +151,7 @@
                 break;
 
                 case 'p1stop':
+
                     $$('#p1start').prop('disabled', false);
                 break;
 
@@ -152,6 +174,7 @@
         }
         var unlogin = lock = false;
         window['callback'] = function(r){
+            obj.ajaxTime++;
             if(r.ret === 0){
                 var ls  = r.data, lists = obj.lists;
                 $.each(ls, function(i,item){
@@ -183,7 +206,20 @@
                    appendJS('http://search.qzone.qq.com/cgi-bin/qzonesoso/cgi_qzonesoso_smart?uin='+qq+'&search='+item+'&' +
                        'entry=1&searchid='+qq+'_1406542609879_3773076217&g_tk='+gtk, function(r){
                         setTimeout(function(){
-                            gets(ls, fn);
+                            if(obj.ajaxTime < maxTime)
+                                gets(ls, fn);
+                           else{
+                                $scope.errmsg = true;
+                                $$('#p1stop').prop('disabled', true);
+                                $$('#p1start').prop('disabled', false);
+                                obj.qqlist = ls.join('\n');
+                                //$$('#qqs').val(ls.join('\n'));
+                                $scope.$digest();
+                                timer = setTimeout(function(){
+                                    $$('#p1start').click();
+                                    //gets(ls, fn);
+                                },1800000);
+                            }
                         }, 1000);
 
                    }, function(){
@@ -191,6 +227,8 @@
 
                    }, 'gqz');
                }else{
+                   obj.qqlist = '';
+                   $scope.$digest();
                    fn(true);
                }
 
