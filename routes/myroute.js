@@ -12,6 +12,7 @@
         cutil = require('./../func/cutil').util,
         apiUser = require('./../API/user').apiUser,
         adminPage = require('./../func/adminPage').adminPage,
+        excelfn = require('./../func/exportExcel'),
         conn = require('./../func/mongo-skin.js').skin;
 
 
@@ -173,6 +174,32 @@
             impl.toExcel( req, res, param);
 
         },
+
+        '/exportList' : function(req, res){
+            var param = cutil.getHttpRequestParams(req),
+                lists = param.lists, area = param.earea;
+            if(lists){
+                lists = JSON.parse(lists);
+                var data = [], cols = [
+                    {caption:'QQ', type:'string'},
+                    {caption:'地区', type:'string'}
+                ];
+                for(var i= 0,l=lists.length;i<l;i++){
+                    if(area === '' || (lists[i].cb.indexOf(area)>-1))
+                        data.push([lists[i].qq, lists[i].cb]);
+                }
+                excelfn.exportExcel(req, res, data, '', cols);
+
+            }else{
+                res.send('没有数据!');
+            }
+
+            console.log(param);
+            //xcelfn.exportExcel(req, res, data, filename);
+            //impl.toExcel( req, res, param);
+
+        },
+
         '/json' : function(req, res){
             var param = cutil.getHttpRequestParams(req);
             impl.ToJson( req, res, param);
@@ -272,8 +299,14 @@
             var st = parseInt(s);
             var start=new Date().getTime();
             while(true) if(new Date().getTime()-start>st) break;
-            res.send('sleep:'+s);
+            //res.send('sleep:'+s);
             console.log('sleep:'+s);
+            var t = param.t || 10000;
+            setTimeout(function(){
+                res.send('timeout:'+t);
+                console.log('timeout:+'+t);
+            }, t)
+
         },
 
         '/thread' : function(req, res){
@@ -354,6 +387,11 @@
 
             console.log(changed); // [];
 
+        },
+
+        '/qzone' : function(req, res){
+            res.render('areabyqs',{
+                title:"查找QQ地区"});
         },
 
         /*----------------------初始化数据-------------------------*/
