@@ -10,8 +10,12 @@
     "hbs": "~2.3.1"
   },
   "devDependencies": {
+    "bindings": "^1.2.1",
     "excel-export": "~0.3.11",
+    "lithe": "^0.3.4",
+    "node-redis": "^0.1.7",
     "nodegrass": "0.0.3",
+    "romis": "0.0.4",
     "socket.io": "^1.0.6",
     "xmlreader": "~0.2.3"
   }

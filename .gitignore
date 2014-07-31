@@ -1,7 +1,7 @@
 # Logs
 logs
 *.log
-
+*.gcf
 # Runtime data
 pids
 *.pid

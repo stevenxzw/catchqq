@@ -109,6 +109,28 @@ io.set('transports', [
 
      });
 
+/**
+ * redis
+
+var redis = require("node-redis");
+var client = redis.createClient(6379);
+
+client.set('key', 'val', function(err, reply) {
+    if (err) {
+        console.log(err);
+        return;
+    }
+    client.get('key', function(err, reply) {
+        if (err) {
+            console.log(err);
+            return;
+        }
+        console.log(reply.toString());
+        client.quit();
+    });
+});
+
+ */
 var myroute = require('./routes/myroute').routefn;
 myroute.globalRoute(app);
 
@@ -122,6 +144,4 @@ app.listen(app.get('port'),'dev.caryous.com', function(){
 //app.listen(app.get('port'), function(){
 //    console.log('Express server listening on port ' + app.get('port'));
 //});
-
-
 

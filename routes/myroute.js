@@ -276,8 +276,83 @@
             console.log('sleep:'+s);
         },
 
-        '/thread' : function(){
-            var threads_a_gogo= require('threads_a_gogo');
+        '/thread' : function(req, res){
+            //var t = require('E:/gitspace/catchqq/node_modules/then-redis/node_modules/hiredis/build/hiredis.node');
+            var romis = require('romis');
+            var Promise = require('bluebird');
+            var client = romis.createClient({
+                host: 'localhost',
+                port: 6379
+            });
+            var log = console.log.bind(console);
+            var error = console.error.bind(console);
+            console.log(client);
+            Promise.all([client.get('key'), client.get('mystring key'), client.hkeys("hash key")]).then(function(r){
+                res.send(arguments);
+            });
+
+            return;
+            Promise.all([
+                    client.set("mystring key","string val")
+                    //client.hset("hash key","hastest 1", "some value"),
+                    //client.hset(["hash key", "hashtest 2", "some other value"]),
+                    //client.hkeys("hash key")
+                ]).then(function(results){
+                    res.send(results);
+                    console.log(results);
+                   // return results.pop(); // Return keys inside `hash key`
+                })
+                .then(log) // Log resulting keys
+                .catch(error);
+            return;
+            var redis = require('then-redis');
+            return;
+            var db = redis.createClient({
+                host: 'localhost',
+                port: 6379
+            });
+            db.set('my-key', 1);
+            db.get('my-key').then(function (value) {
+                console.log(value);
+                res.send(111);
+                //assert.strictEqual(value, 6);
+            });
+            res.send(22222222);
+            return;
+            //var threads_a_gogo= require('threads_a_gogo');
+            var redis = require("node-redis");
+            var client = redis.createClient(6379);
+
+            client.set('key', 'val', function(err, reply) {
+                if (err) {
+                    console.log(err);
+                    return;
+                }
+                client.get('key', function(err, reply) {
+                    if (err) {
+                        console.log(err);
+                        return;
+                    }
+                    console.log(reply.toString());
+                    res.send(reply.toString());
+                    client.quit();
+                });
+            });
+        },
+
+        '/gcf' : function(){
+            var gcf = require('./../func/gcf');
+
+            var changed = gcf.get('./func/',function(item){
+
+                if(item.match(/^node_modules|^\./)){
+                    //console.log('return false');
+                    return false;
+                }
+                return true;
+            });
+
+            console.log(changed); // [];
 
         },
 
