@@ -310,9 +310,75 @@
         },
 
         '/thread' : function(req, res){
+            var Promise = require('bluebird');
+            var fs = require("fs");
+
+            var romis = require('romis');
+            var client = romis.createClient({
+                host: 'localhost',
+                port: 6379
+            });
+            var redis = require("node-redis"),
+                client = redis.createClient();
+
+            client.on("error", function (err) {
+                console.log("Error " + err);
+            });
+
+            client.hset("hash key", "hashtest 1", "some value", redis.print);
+            client.hset(["hash key", "hashtest 2", "some other value"], redis.print);
+            client.hkeys("hash key", function (err, replies) {
+                console.log(replies.length + " replies:");
+                replies.forEach(function (reply, i) {
+                    console.log("    " + i + ": " + reply);
+                });
+                client.quit();
+            });
+
+            return;
+
+            Promise.all([
+                    client.hset("hash key","hastest 1", "some value"),
+                    client.hset(["hash key", "hashtest 2", "some other value"]),
+                    client.get('key'), client.get('mystring key'), client.hkeys("hash key")]).then(function(r){
+                res.send(arguments);
+            });
+           // res.send('t');
+            return;
+            Promise.promisifyAll(fs);
+            Promise.reduce(["./index.html", "./package.json"], function(total, fileName) {
+                console.log(fileName);
+                return fs.readFileAsync(fileName, "utf8").then(function(contents) {
+                    console.log(contents);
+                    return total + parseInt(contents, 10);
+                });
+            }, 0).then(function(total) {
+                   console.log(total);
+                });
+
+            return;
+            Promise.delay(500).then(function() {
+
+                return [fs.readFileAsync("./index.html"),
+                    fs.readFileAsync("./package.json")] ;
+            }).then(function(file1text, file2text) {
+
+                    console.log(file1text.toString());
+                    try{
+                        if(text1 != file1text){
+
+                        }
+                    }catch(e){
+                        console.log('catch');
+                    }
+                });
+             return;
+
+
+            return;
             //var t = require('E:/gitspace/catchqq/node_modules/then-redis/node_modules/hiredis/build/hiredis.node');
             var romis = require('romis');
-            var Promise = require('bluebird');
+
             var client = romis.createClient({
                 host: 'localhost',
                 port: 6379
