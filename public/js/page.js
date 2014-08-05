@@ -218,7 +218,7 @@
                                 timer = setTimeout(function(){
                                     $$('#p1start').click();
                                     //gets(ls, fn);
-                                },1800000);
+                                },600000);
                             }
                         }, 1000);
 
