@@ -86,7 +86,7 @@
     }])
     .controller('areabyqs', ['$scope','$http','$compile',function($scope,$http,$compile){
         var qq = localStorage.getItem('qq'), skey = localStorage.getItem('skey'),
-            timer = null, maxTime = 500;
+            timer = null, maxTime = 450;
         $scope.errmsg = false;
             appendJS('http://apps.qq.com/app/yx/cgi-bin/show_fel?hc=8&lc=4&d=365633133&t='+(+new Date), function(r){
                 try {
@@ -107,7 +107,7 @@
            // 'lists':[{ qq:"154036777", cb:"中国:广东:广州"},{ qq:"9874444", cb:"山东:日照"}],
             'lists':[],
             num : 0,
-            msg :'本次请求数已超'+maxTime+'次，暂停读取，30分钟后恢复',
+            msg :'本次请求数已超'+maxTime+'次，暂停读取，10分钟后恢复',
             area : '',
             ajaxTime : 0,
             skey :skey || '@jVCjp2xFg',
@@ -175,7 +175,7 @@
         var unlogin = lock = false;
         window['callback'] = function(r){
             obj.ajaxTime++;
-            if(r.ret === 0){
+            if(r.ret === 0 && r.message === 'succ'){
                 var ls  = r.data, lists = obj.lists;
                 $.each(ls, function(i,item){
                     var sdata = item.sData.resultData;
@@ -190,12 +190,15 @@
             }else if(r.ret == -102){//未登录
                 //unlogin = true;
                 //alert('请先登录')
+            }else if(r.ret === 0 && r.message === "system ApiFrequencyContrl error, please try later."){
+                unlogin = true;
+                alert('请求过多帐号被封');
             }
 
         }
            function gets(ls, fn){
                if(unlogin){
-                   alert('请先登录');
+                   //alert('请先登录');
                    return;
                }
 
