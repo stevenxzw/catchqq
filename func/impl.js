@@ -29,6 +29,47 @@
             }
         },
 
+        savePraise : function(lists,result, blogid, blogName, qid, res){
+            if(lists.length>0){
+                var item = lists.shift(), that = this;
+                mongo.read('praise', {qq:item.q, blogid:blogid}, function(err, r){
+                    if(!err){
+                        if(r.length>0){
+                            console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<---重复------------------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+                            that.savePraise(lists,result,blogid,blogName,qid, res);
+                        }else{
+                            //that.getAreaByApi(item.uin, function(result){
+                            result.push({
+                                qq :item.q,
+                                name : item.n,
+                                blogid : blogid,
+                                blogname:blogName,
+                                qzoneid : qid,
+                                addTime : +new Date,
+                                area :item.ad,
+                                gender : item.gd,
+                                constellation : item.c,
+                                time :''
+                            });
+                            that.savePraise(lists,result,blogid,blogName,qid, res);
+                        }
+                    }
+                })
+            }else{
+                if(result.length){
+                    mongo.add('praise', result, function(err, r){
+                        if(!err){
+                            res.json(200, {'errno': 0, err:'', 'rst':{len:result.length}});
+                        }
+                    })
+                }else{
+                    res.json(200, {'errno': 11, err:'没有可保存数据或者没有新数据', 'rst':{}});
+                }
+
+
+            }
+        },
+
         ToJson : function(req, res, param){
             var blogid  = param.id, blogname = param.name, area = param.area,des = {}, qzoneid = param.qzoneid;
             if(blogid) des['blogid'] = blogid;
@@ -73,8 +114,8 @@
             }
         },
 
-        toExcel : function(req, res, param){
-            var blogid  = param.id, blogname = param.name, area = param.area,des = {}, qzoneid = param.qzoneid;
+        toExcel : function(param, fn, req, res){
+            var blogid  = param.id, blogname = param.name, area = param.area,des = {}, qzoneid = param.qzoneid, table = param.etype;
             if(blogid) des['blogid'] = blogid;
             if(blogname) des['blogname'] = blogname;
             if(qzoneid) des['qzoneid'] = qzoneid;
@@ -83,20 +124,25 @@
                     des['area'] = eval("/"+area+"/");
             }
             var filename = param.filename;
-            mongo.read('blogqq', des, function(err, r){
+            mongo.read(table, des, function(err, r){
                 if(!err){
                     var data = [];
                     for(var i= 0,len = r.length;i<len;i++){
                         var item = r[i];
+                        var _t = [item.qq, cutil.trim(item.name), 'item.area', toTime(item.time), item.blogname, item.blogid];
+                        //console.log(_t.toString())
+                        //data.push([item.qq, cutil.trim(item.name), 'item.area', toTime(item.time), item.blogname, item.blogid]);
                         data.push([item.qq, item.name, item.area, toTime(item.time), item.blogname, item.blogid]);
                     }
-                    excelfn.exportExcel(req, res, data, filename);
+                    //excelfn.exportExcel.toExcel(req, res, data, filename);
+                    excelfn.exportExcel.toxlsx(data, '', '', fn);
                 }else{
                      res.json(200, {err : 'error'});
                 }
                 //excelfn.exportExcel(req, res);
             });
             function toTime(r){
+                if(r == '') return '-';
                 var len = r.toString().length;
                 if(len< 13) r = Number(r)*1000;
                 else r = Number(r);

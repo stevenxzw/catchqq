@@ -8,7 +8,7 @@
     //if(_debug) console.log('========================conn-----------------------');
     var mongo = require('mongoskin');
     if(localConn){
-        exports.db = mongo.db('mongodb://localhost/catchqq');
+        exports.db = mongo.db('mongodb://localhost/catchqqbackup');
         if(_debug) console.log('本地数据库-------conn------');
     }else{
         if(_debug) console.log('外网数据库-------conn------');

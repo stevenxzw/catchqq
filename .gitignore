@@ -4,6 +4,7 @@ logs
 *.gcf
 # Runtime data
 pids
+files
 *.pid
 *.seed
 

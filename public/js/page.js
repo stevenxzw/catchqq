@@ -5,35 +5,34 @@
 (function(AT, $$, win){
 
     //AT.config.host = 'http://localhost:3002';
+    AT.config.host = 'http://'+location.host;
+    function isLogin(){
+        appendJS('http://apps.qq.com/app/yx/cgi-bin/show_fel?hc=8&lc=4&d=365633133&t='+(+new Date), function(r){
+            try {
+                if (data0.err == '1026') {//已登录,取空间UID
 
-    function appendJS(url, success, error, id){
-        success = success || jq.noop;
-        var oScript = document.createElement("script");
-        oScript.type = "text/javascript";
-        oScript.src = url;
-        if (oScript.readyState) {
-            oScript.onreadystatechange = function() {
-                if (oScript.readyState == "loaded"
-                    || oScript.readyState == "complete") {
-                    oScript.onreadystatechange = null;
-                    window.setTimeout(success, 10);
+                } else {
+                    alert('请先登录webQQ');
                 }
-            };
-        } else {
-            oScript.onload = function() {
-                window.setTimeout(success, 10);
-            };
-        }
+            } catch (e) {
 
-        if(id){
-            oScript.id = id;
-        }
+            }
+        }, function(){
 
-        oScript.onerror = function(){
-            (error || jq.noop)();
-        }
-        document.getElementsByTagName('HEAD').item(0).appendChild(oScript);
+        }, 'appUin');
+
     }
+
+    function getGTK(str){
+        var hash = 5381;
+
+        for(var i = 0, len = str.length; i < len; ++i){
+            hash += (hash << 5) + str.charAt(i).charCodeAt();
+        }
+
+        return hash & 0x7fffffff;
+    }
+
     var myApp = angular.module('myApp',['DelegateEvents',  'filterList'], function($interpolateProvider) {
         $interpolateProvider.startSymbol('<%');
         $interpolateProvider.endSymbol('%>');
@@ -88,19 +87,7 @@
         var qq = localStorage.getItem('qq'), skey = localStorage.getItem('skey'),
             timer = null, maxTime = 450;
         $scope.errmsg = false;
-            appendJS('http://apps.qq.com/app/yx/cgi-bin/show_fel?hc=8&lc=4&d=365633133&t='+(+new Date), function(r){
-                try {
-                    if (data0.err == '1026') {//已登录,取空间UID
-
-                    } else {
-                       alert('请先登录webQQ');
-                    }
-                } catch (e) {
-
-                }
-            }, function(){
-
-            }, 'appUin');
+        isLogin();
 
             var obj = {
             'qqlist': '154036777\n1957719679\n9874444',
@@ -114,15 +101,6 @@
             kcode : '',
             qq : qq || 154036777
         };
-        function getGTK(str){
-            var hash = 5381;
-
-            for(var i = 0, len = str.length; i < len; ++i){
-                hash += (hash << 5) + str.charAt(i).charCodeAt();
-            }
-
-            return hash & 0x7fffffff;
-        }
 
         $$('#p1start').prop('disabled', false);
         $scope.obj = obj;
@@ -242,10 +220,14 @@
     .controller('Get', ['$scope','$http','$compile',function($scope,$http,$compile){
             //appendJS('http://c.v.qq.com/vuserfolders?otype=json&callback=cb');
             //59.41.33.218
-
+            isLogin();
             var socket = io.connect(AT.config.host);
             //var socket = io.connect('http://localhost:3002');
             $$('#getArea').prop('disabled', false);
+            //导出xls
+            socket.on('outxls', function(d){
+                jQuery('body').append('<iframe src="'+d+'" style="display:none;"></iframe>');
+            })
             socket.on('getArea-finished', function (data) {
                 console.log('getArea-finished');
                 console.log(data);
@@ -287,6 +269,84 @@
                 $scope.$digest();
             })
 
+            var _praise = localStorage.getItem('praise'), praiseTimer = null;
+
+            //localStorage.setItem("qq", window.qq);
+            //localStorage.setItem("skey",obj.skey);
+            /*---------------------------点赞QQ 功能部分------------------------------*/
+            var praise = {
+                qq : '',
+                bqq : '732952649',//文章主空间QQ
+                aid : '1408498303',//文章ID
+                name : '酷酷口语',
+                skey : '',
+                num : 0,
+                uri:'blog',
+                ajaxTime : 0,
+                lin: 0,
+                beginQQ : 0,
+                tgk : '',
+                restart : 1,
+                timenumber: 24
+            };
+            if(_praise){
+                jQuery.extend(praise, JSON.parse(_praise));
+            }
+            function getPraise(page, beginQQ){
+                if(!page){
+                    page = 0;
+                    beginQQ = 0;
+                }
+                var _page = page === 0 ? 1 : 0;
+                appendJS('http://users.qzone.qq.com/cgi-bin/likes/get_like_list_app?uin='+praise.qq+'&' +
+                    'unikey=http://user.qzone.qq.com/'+praise.bqq+'/'+praise.uri+'/'+praise.aid+'&begin_uin='+beginQQ+'&' +
+                    'query_count=60&if_first_page='+_page+'&g_tk='+gtk, function(r){
+
+                    return
+
+                }, function(){
+
+
+                }, 'gqz');
+
+
+            }
+
+            window['_Callback'] = function(r){
+                if(r && r.data.like_uin_info){
+                    var od = r.data.like_uin_info, rd = [], beginQQ = '';
+                    for(var i= 0,len = od.length;i<len;i++){
+                        rd.push({
+                            q : od[i].fuin,
+                            n :  od[i].nick,
+                            gd : od[i].gender,
+                            c : od[i].constellation,
+                            ad :od[i].addr
+                        });
+                        beginQQ = od[i].fuin;
+                    }
+                    if(rd.length){
+                        var param = "blogid="+praise.aid+"&bn="+praise.name+"&qid="+praise.bqq;
+                        $http.post('http://'+location.host+'/api/sendpraise?'+param,{lists : rd } ).success(function(r){
+                           if(r.errno == '0'){
+                               praise.num++;
+                               praise.lin += r.rst.len;
+                               localStorage.setItem('praise', JSON.stringify(praise));
+                               praiseTimer = setTimeout(function(){getPraise(1, beginQQ);}, 2000);
+                           }else{
+                                alert(r.err)
+                           }
+                        });
+                    }else{
+                        alert('没有可导入数据');
+                    }
+                }
+
+            }
+
+            /*-------------------------功能部分结束 ------------------------------------------*/
+
+            //浏览文章QQ 功能部分
             var blog = {
                 qq : '448530028',
                 id : '6c06bc1ae975b353c45c0d00',
@@ -294,8 +354,11 @@
                 timer : 40000,
                 area : '广州',
                 num : 0,
+                etype : 'blogqq',
                 timenumber: 24
             };
+
+            //浏览文章QQ
 
             $scope.Area = {
                 getnum : 12,
@@ -314,6 +377,8 @@
 
             $scope.blog = blog;
 
+            $scope.praise = praise;
+
             $scope.searchArea = {
 
                 num : 0,
@@ -321,10 +386,70 @@
                 show : false
             };
 
+            /*-----------------------导出部分-----------------------*/
+
+            $scope.exportObj = exportObj = {
+
+                qq : '',
+
+                id : '',
+
+                name : '',
+
+                area : '',
+
+                etype : 'blogqq',
+
+                show : false,
+
+                num : 0
+
+            };
+            var _exportObj = localStorage.getItem('exportObj');
+            if(_exportObj){
+                $.extend(exportObj, JSON.parse(_exportObj));
+                exportObj.show = false ;
+            }
+
+            /*-----------------------导出部分结束-----------------------*/
+
+
             $scope.itemClick = function(e, item) {
                 e.preventDefault();
                 var buttonValue = e.target.value;
                 switch(buttonValue){
+
+                    case 'p5start':
+                        e.target.disabled = true;
+                        window.qq = $$.trim(praise.qq);
+                        window.gtk = getGTK($$.trim(praise.skey));
+                        localStorage.setItem('praise', JSON.stringify(praise));
+                        if(praise.restart == '0'){//先找到最后一个QQ号
+                            $http.get('http://'+location.host+'/getBeginQQ?bid='+praise.aid+'&qid='+praise.bqq).success(function(r){
+                                if(r.errno == '0'){
+                                    if( r.rst.result.length)
+                                        getPraise(1, r.rst.result[0].qq);
+                                    else{
+                                        praise.num = 0;
+                                        praise.lin = 0;
+                                        localStorage.setItem('praise', JSON.stringify(praise));
+                                        getPraise(0,'');
+                                    }
+                                }else
+                                    alert(r.err);
+                            });
+
+                        }else{
+                            getPraise(praise.ajaxTime, praise.beginQQ);
+                        }
+                        break;
+
+                    case 'p5stop':
+                        var jqp  = $(e.target).parent();
+                        jqp.children().eq(0).prop('disabled', false);
+                        clearTimeout(praiseTimer);
+                        praiseTimer = null;
+                    break;
 
                     case 'getArea':
                         e.target.disabled = true;
@@ -368,27 +493,35 @@
                     break;
 
                     case 'part3excel':
-                        var param = "id="+blog.id+"&name="+blog.name+"&area="+blog.area+"&qzoneid="+blog.qq;
-                            src = AT.config.host+'/excel?'+param;
-                        jQuery('body').append('<iframe src="'+src+'" style="display:none;"></iframe>');
-                        //$http.get(AT.config.host+'/excel?'+param, blog).success(function(r){
 
-                       // });
+                        var param = "id="+exportObj.id+"&name="+exportObj.name+"&area="+exportObj.area+"&qzoneid="+exportObj.qq+'&etype='+exportObj.etype;
+                            src = AT.config.host+'/excel?'+param;
+                        //jQuery('body').append('<iframe src="'+src+'" style="display:none;"></iframe>');
+                       // return;
+                        $http.get(src).success(function(r){
+                            $scope.exportObj.num = '请等待...';
+                            $scope.exportObj.show = true;
+                        });
                     break;
                     case 'part3json':
-                        var param = "id="+blog.id+"&name="+blog.name+"&area="+blog.area+"&qzoneid="+blog.qq;
+                        //socket.emit('xls-client',{});
+                        var  src = AT.config.host+'/xlxs';
+                        jQuery('body').append('<iframe src="'+src+'" style="display:none;"></iframe>');
+                        return;
+                        var param = "id="+exportObj.id+"&name="+exportObj.name+"&area="+exportObj.area+"&qzoneid="+exportObj.qq;
                         src = AT.config.host+'/json?'+param;
                         $http.get(src).success(function(r){
                             console.log(r);
                         });
                         break;
                     case 'part3count' :
-                        var param = "id="+blog.id+"&name="+blog.name+"&area="+blog.area;
+                        var param = "qzoneid="+exportObj.qq+"&id="+exportObj.id+"&name="+exportObj.name+"&area="+exportObj.area+'&etype='+exportObj.etype;
                         //var param = "id="+blog.id+"&name="+blog.name,
                         src = AT.config.host+'/excelcount?'+param;
                         $http.get(src).success(function(r){
-                            $scope.searchArea.num = r.num;
-                            $scope.searchArea.show = true;
+                            $scope.exportObj.num = r.num;
+                            $scope.exportObj.show = true;
+                            localStorage.setItem('exportObj', JSON.stringify(exportObj));
                             //$scope.$digest();
                         });
                     break;
@@ -406,6 +539,7 @@
 
                 console.log('----');
             })
+
 
     }]);
 

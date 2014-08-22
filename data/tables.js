@@ -14,6 +14,19 @@
             loginTimes : 1
         }],
 
+        praise : [{
+            qq : '154036777',//访客QQ
+            blogid : '1408498303',//文章id
+            name : 'test',//访客名称
+            qzoneid : '732952649',//空间ID
+            addTime : 1404921913274,//添加时间
+            blogname : '测试',
+            area : '',//地区
+            gender:'男',
+            constellation : '天秤',
+            time : '1403854824273'//访客访问时间
+        }],
+
         blogqq : [{
             qq : '154036777',//访客QQ
             blogid : '6c06bc1ac125aa5305030e00',//blog id

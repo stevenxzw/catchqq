@@ -17,6 +17,7 @@
     "nodegrass": "0.0.3",
     "romis": "0.0.4",
     "socket.io": "^1.0.6",
-    "xmlreader": "~0.2.3"
+    "xmlreader": "~0.2.3",
+    "node-xlsx": "~0.4.0"
   }
 }

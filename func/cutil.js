@@ -6,6 +6,10 @@
 
     exports.util = {
 
+       result : function(code, msg, rst){
+           return {'errno': code, 'err':msg, rst : rst};
+       },
+
        getGTK : function (str){  //g_tk计算方式
             var hash = 5381;
             for(var i = 0, len = str.length; i < len; ++i)

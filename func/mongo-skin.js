@@ -74,6 +74,16 @@
                     _debug && console.log('drop');
                 }
             });
+        },
+
+        findLast : function(table,items, fn){
+            db.collection(table).find(items).sort({_id:-1}).limit(1).toArray(function(err, data){
+                //if(_debug) console.log(data);
+                //if(err) throw err;
+                fn && fn(err,data);
+                //if(_debug) console.log(data);
+            });
+
         }
 
 

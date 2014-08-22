@@ -20,7 +20,7 @@
         host : _debug ? 'http://localhost:3002':'http://arcane-escarpment-5810.herokuapp.com'
     };
 
-    var io = global.io, dbclick = null, tt  = +new Date;
+    var io = global.io, dbclick = null, tt  = +new Date, outSocket;
     function getAreaAction(param, socket){
         console.log('socket-getArea-action');
         impl.socket_area(param.area, function(result){
@@ -50,6 +50,8 @@
 
             });
         });
+        outSocket = socket;
+        //setTimeout(function(){outSocket.emit('outxls', 333)}, 5000);
     });
 
     var routes = {
@@ -83,8 +85,16 @@
             //res.json(200, {save:'success'});
         }],
 
+        '/api/sendpraise' : [false, function(req, res){//QQ空间blog访客QQ
+            var param = cutil.getHttpRequestParams(req), lists = param.lists;
+            //if(lists){
+            //    lists = JSON.parse(lists);
+           // }
+            impl.savePraise(lists, [], param.blogid, param.bn ,param.qid, res);
+            //res.json(200, {save:'success'});
+        }],
+
         '/qlist' : [false, function(req, res){
-            var conn = require('./../func/mongo-skin').skin;
             conn.read('qqs','', function(err,data){
                 res.render('qlist',{
                     title:"qq列表",users:data});
@@ -111,7 +121,6 @@
         },
 
         '/blogqq' : [false, function(req, res){
-            var conn = require('./../func/mongo-skin').skin;
             var param = cutil.getHttpRequestParams(req);
             var ps = Number(param.ps) || 100, page = Number(param.pg);
             conn.count('blogqq', '', function(err, rel){
@@ -133,8 +142,44 @@
 
         }],
 
-        '/infoByQQ' : function(req, res){
+        '/praise' : [false, function(req, res){
             var conn = require('./../func/mongo-skin').skin;
+            var param = cutil.getHttpRequestParams(req);
+            var ps = Number(param.ps) || 100, page = Number(param.pg);
+            conn.count('praise', '', function(err, rel){
+                var allpage = Math.ceil(rel/ps), pages = [];
+                if(!page) page = 1;
+                if(page > allpage) page = allpage;
+                for(var i=1;i<=allpage;i++)
+                    pages.push(i);
+                if(rel < ps) ps = rel;
+                var p  = {};
+                p['addTime'] = {$ne:''};
+                conn.read('praise',p, function(err,data){
+                    res.render('praise',{
+                        title:"qq列表",users:data,allPage:allpage, count:rel, pages:pages,ps:ps,
+                        prePage : page-1 < 1 ?1:page-1,
+                        page:page, nextPage: page+1 > allpage ? allpage : page+1});
+                }, page, ps);
+            })
+        }],
+
+        '/getBeginQQ' : function(req, res){
+            var param = cutil.getHttpRequestParams(req);
+            if(param.bid && param.qid){
+                conn.findLast('praise', {blogid:param.bid, qzoneid:param.qid}, function(err, r){
+                    if(!err){
+                        res.json(200, {errno:0, err:'', rst:{result : r}});
+                    }else{
+                        res.json(200, {errno:1, err:'error', rst:''});
+                    }
+                })
+            }else{
+                res.json(200, {errno:1, err:'bid和qid不能为空', rst:''});
+            }
+        },
+
+        '/infoByQQ' : function(req, res){
             var param = cutil.getHttpRequestParams(req);
             if(param.qq){
                 conn.read('blogqq', {qq:Number(param.qq)}, function(err, r){
@@ -171,8 +216,12 @@
 
         '/excel' : function(req, res){
             var param = cutil.getHttpRequestParams(req);
-            impl.toExcel( req, res, param);
+            impl.toExcel(param,function(fileSrc){
 
+                outSocket.emit('outxls', fileSrc);
+
+            }, req, res);
+            res.json(200, cutil.result(0, '', '请等待'));
         },
 
         '/exportList' : function(req, res){
@@ -188,7 +237,7 @@
                     if(area === '' || (lists[i].cb.indexOf(area)>-1))
                         data.push([lists[i].qq, lists[i].cb]);
                 }
-                excelfn.exportExcel(req, res, data, '', cols);
+                excelfn.exportExcel.toExcel(req, res, data, '', cols);
 
             }else{
                 res.send('没有数据!');
@@ -208,8 +257,9 @@
 
         '/excelcount' : function(req, res){
             var param = cutil.getHttpRequestParams(req);
-            var blogid  = param.id, blogname = param.name, area = param.area,des = {};
+            var blogid  = param.id, blogname = param.name, area = param.area, qzoneid = param.qzoneid, des = {};
             if(blogid) des['blogid'] = blogid;
+            if(qzoneid) des['qzoneid'] = qzoneid;
             if(blogname) des['blogname'] = blogname;
 
             if(area){
@@ -217,7 +267,7 @@
                     des['area'] = eval("/"+area+"/");
             }
             var filename = param.filename;
-            conn.count('blogqq', des, function(err, r){
+            conn.count(param.etype || 'blogqq', des, function(err, r){
                 if(!err){
                     res.json(200, {num : r});
                 }
@@ -460,9 +510,41 @@
                 title:"查找QQ地区"});
         },
 
+        //下载文件s
+        '/files/*' : function(req, res){
+            var url = req.originalUrl;
+            res.download('.'+url);
+        },
+
+        '/xlxs' : function(req, res){
+
+        },
+
         /*----------------------初始化数据-------------------------*/
         '/init/tables' : [false, function(req, res){
             initClass.initTables(req, res);
+        }],
+
+        '/init/addTable' : [false, function(req, res){
+
+            var param = cutil.getHttpRequestParams(req);
+            if(!param.t){
+                res.send('请选择要添加的数据表!');
+            }else{
+                tables = require('./../data/tables.js').userTable;
+                if(tables[param.t]){
+                    initClass.initTable(param.t, tables[param.t], function(r){
+
+                        console.log(r);
+                    });
+
+                }else{
+                    res.send('没有可添加的数据表!');
+                }
+
+
+            }
+
         }],
 
 
@@ -496,6 +578,8 @@
                 layout : 'templateLayout',
                 title:"详细内容"});
         }]
+
+
 
 
     }

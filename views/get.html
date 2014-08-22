@@ -1,5 +1,65 @@
 
 <div ng-controller="Get" selector="button" ngd-click="itemClick($event)">
+    <div class="panel panel-primary" id="part5">
+        <div class="panel-heading">
+            <h3 class="panel-title">获取点赞QQ</h3>
+        </div>
+        <div class="panel-body" >
+            <form class="form-horizontal" role="form">
+                <div class="form-group">
+                    <label for="bid5" class="col-sm-2 control-label">空间QQ</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" ng-model="praise.bid" id="bid5" placeholder="QQ">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="tid" class="col-sm-2 control-label">文章ID</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" ng-model="praise.aid" id="tid" placeholder="ID">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="bn" class="col-sm-2 control-label">名称</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" ng-model="praise.name" id="bn5" placeholder="Blog名称">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="qq5" class="col-sm-2 control-label">登录QQ</label>
+                    <div class="col-sm-4">
+                        <input  class="form-control" ng-model="praise.qq" id="qq5" placeholder="qq">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="skey" class="col-sm-2 control-label">skey</label>
+                    <div class="col-sm-4">
+                        <input  class="form-control" ng-model="praise.skey" id="skey" placeholder="skey">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="url" class="col-sm-2 control-label">Url</label>
+                    <div class="col-sm-4">
+                        <input  class="form-control" ng-model="praise.uri" id="url" placeholder="blog or mood">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="restart" class="col-sm-2 control-label">重新获取</label>
+                    <div class="col-sm-4">
+                        <input  class="form-control" ng-model="praise.restart" id="restart" placeholder="0表示追加，1表示重新获取">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button type="button" class="btn btn-primary" value="p5start">开始</button>
+                        <button type="button" class="btn btn-warning" value="p5stop">停止</button>
+                        <span ng-model="praise">运行次数:<% praise.num %>,已录入:<% praise.lin %></span>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
     <div class="panel panel-primary" id="part1">
         <div class="panel-heading">
             <h3 class="panel-title">获取QQ</h3>
@@ -87,33 +147,42 @@
         <div class="panel-body" >
             <form class="form-horizontal" role="form">
                 <div class="form-group">
+                    <label for="etype" class="col-sm-2 control-label">导出类型</label>
+                    <div class="col-sm-4">
+                        <select ng-model="exportObj.etype" id="etype">
+                            <option value="blogqq">空间QQ</option>
+                            <option value="praise">点赞QQ</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
                     <label for="qzone" class="col-sm-2 control-label">空间id</label>
                     <div class="col-sm-4">
-                        <input  class="form-control" ng-model="blog.qq" id="qzone" placeholder="">
+                        <input  class="form-control" ng-model="exportObj.qq" id="qzone" placeholder="">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="barea" class="col-sm-2 control-label">地区</label>
                     <div class="col-sm-4">
-                        <input  class="form-control" ng-model="blog.area" id="barea" placeholder="area">
+                        <input  class="form-control" ng-model="exportObj.area" id="barea" placeholder="area">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="bids" class="col-sm-2 control-label">blogID</label>
                     <div class="col-sm-4">
-                        <input  class="form-control" ng-model="blog.id" id="bids" placeholder="Blogid">
+                        <input  class="form-control" ng-model="exportObj.id" id="bids" placeholder="Blogid">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="bn" class="col-sm-2 control-label">blog名称</label>
                     <div class="col-sm-4">
-                        <input type="text" class="form-control"  ng-model="blog.name" id="bname" placeholder="Blog名称">
+                        <input type="text" class="form-control"  ng-model="exportObj.name" id="bname" placeholder="Blog名称">
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
                         <button type="button" class="btn btn-primary" value="part3count">数量</button>
-                        <span class="alert alert-success" role="alert" ng-model="searchArea.num" ng-show="searchArea.show"><% searchArea.num %></span>
+                        <span class="alert alert-success" role="alert" ng-model="exportObj.num" ng-show="exportObj.show"><% exportObj.num %></span>
                         <button type="button" class="btn btn-primary" value="part3excel">导出</button>
                         <button type="button" class="btn btn-primary" value="part3json">json</button>
                     </div>
