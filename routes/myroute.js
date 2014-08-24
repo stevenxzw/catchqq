@@ -516,7 +516,27 @@
             res.download('.'+url);
         },
 
-        '/xlxs' : function(req, res){
+        '/addqq' : function(req, res){
+            var items  = [];
+            for(var i=100;i<2000;i++){
+                items.push({
+                    qq : 1+i,
+                    name : 'test_'+i,
+                    blogid : '6c06bc1a6d9fba5348bc0e00',
+                    blogname : 'test',
+                    qzoneid : '448530028',
+                    addTime : '',
+                    area : '',
+                    time : ''
+                });
+            }
+
+            conn.add('blogqq', items, function(r){
+                res.send('success');
+            });
+
+
+            //var fs = require('fs');
 
         },
 

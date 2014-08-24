@@ -135,7 +135,9 @@
                         data.push([item.qq, item.name, item.area, toTime(item.time), item.blogname, item.blogid]);
                     }
                     //excelfn.exportExcel.toExcel(req, res, data, filename);
-                    excelfn.exportExcel.toxlsx(data, '', '', fn);
+
+                    excelfn.exportExcel.toExcelMax(req, res, data, filename);
+                    //excelfn.exportExcel.toxlsx(data, '', '', fn);
                 }else{
                      res.json(200, {err : 'error'});
                 }
@@ -150,6 +152,10 @@
             }
 
         },
+
+
+
+
         saveBlogQQ : function(lists, blogid,blogName,qzoneid, fn){
             if(lists.length>0){
                 var item = lists.shift(), that = this;
