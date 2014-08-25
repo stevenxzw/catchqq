@@ -15,41 +15,21 @@ exports.exportExcel = {
         var write = function(d){
 
             if(filename){
-                console.log('========================');
-                fs.readFile('./files/'+filename, function(err,file){
-                    var conf ={};
-                    conf.rows = d || [
-                        ['pi', '2001-11-1', true, 3.14],
-                        ["e",  '2001-11-1', false, 2.7182]
-                    ];
-                    var result = nodeExcel.execute(conf);
-                    fs.appendFileSync('./files/'+filename, result, 'binary');
+                fs.readFile('./files/'+filename, function(err,c){
+                    fs.appendFile('./files/'+filename, '\n'+d.join('\n'), 'UTF8');
                     if(data.length){
-                        write(data.splice(0,splitNum));
+                        var s = data.length > splitNum ? splitNum : data.length, _d = data.splice(0,s);
+                        write(_d);
                     }else{
-
-                        console.log('success');
+                        fn && fn('/files/'+filename);
                     }
                 })
             }else{
-                var conf ={};
-                conf.cols = [
-                    {caption:'QQ', type:'string'},
-                    {caption:'likename', type:'string'},
-                    {caption:'地区', type:'string'},
-                    {caption:'访问时间', type:'string'},
-                    {caption:'blog', type:'string'},
-                    {caption:'blogid', type:'string'}
-                ];
-                conf.rows = d || [
-                    ['pi', '2001-11-1', true, 3.14],
-                    ["e",  '2001-11-1', false, 2.7182]
-                ];
-                filename = (filename||(+new Date))+'.xlsx';
-                var result = nodeExcel.execute(conf);
-                fs.writeFileSync('./files/'+filename, result, 'binary');
+                filename = (filename||(+new Date))+'.txt';
+                fs.writeFileSync('./files/'+filename, d.join('\n'), 'UTF8');
                 if(data.length){
-                    write(data.splice(0,splitNum));
+                    var s = data.length > splitNum ? splitNum : data.length;
+                    write(data.splice(0,s));
                 }
             }
         }
@@ -86,11 +66,6 @@ exports.exportExcel = {
         if(!filename) filename = (+new Date)+'.xls';
         data.unshift(header);
         var obj = {"worksheets":[{"data":data}]};
-
-        console.log('-------------------------------');
-        console.log(obj);
-
-        return;
         var file = xlsx.build(obj);
         fs.writeFileSync('./files/'+filename, file, 'binary');
         fn && fn('/files/'+filename);

@@ -227,6 +227,8 @@
             //导出xls
             socket.on('outxls', function(d){
                 jQuery('body').append('<iframe src="'+d+'" style="display:none;"></iframe>');
+                exportObj.show = false ;
+                $scope.$digest();
             })
             socket.on('getArea-finished', function (data) {
                 console.log('getArea-finished');

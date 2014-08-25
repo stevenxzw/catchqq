@@ -129,22 +129,23 @@
                     var data = [];
                     for(var i= 0,len = r.length;i<len;i++){
                         var item = r[i];
-                        var _t = [item.qq, cutil.trim(item.name), 'item.area', toTime(item.time), item.blogname, item.blogid];
                         //console.log(_t.toString())
                         //data.push([item.qq, cutil.trim(item.name), 'item.area', toTime(item.time), item.blogname, item.blogid]);
                         data.push([item.qq, item.name, item.area, toTime(item.time), item.blogname, item.blogid]);
                     }
                     //excelfn.exportExcel.toExcel(req, res, data, filename);
-
-                    excelfn.exportExcel.toExcelMax(req, res, data, filename);
-                    //excelfn.exportExcel.toxlsx(data, '', '', fn);
+                    if(len > 5000){
+                        excelfn.exportExcel.toExcelMax(req, res, data, filename, fn);
+                    }else{
+                        excelfn.exportExcel.toxlsx(data,filename,'', fn);
+                    }
                 }else{
                      res.json(200, {err : 'error'});
                 }
                 //excelfn.exportExcel(req, res);
             });
             function toTime(r){
-                if(r == '') return '-';
+                if(r == '') return ' ';
                 var len = r.toString().length;
                 if(len< 13) r = Number(r)*1000;
                 else r = Number(r);

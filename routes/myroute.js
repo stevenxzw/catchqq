@@ -215,9 +215,11 @@
         },
 
         '/excel' : function(req, res){
-            var param = cutil.getHttpRequestParams(req);
-            impl.toExcel(param,function(fileSrc){
+            var param = cutil.getHttpRequestParams(req),
+                startTime = +new Date;
 
+            impl.toExcel(param,function(fileSrc){
+                console.log('耗时:'+((+new Date) - startTime));
                 outSocket.emit('outxls', fileSrc);
 
             }, req, res);
@@ -237,7 +239,15 @@
                     if(area === '' || (lists[i].cb.indexOf(area)>-1))
                         data.push([lists[i].qq, lists[i].cb]);
                 }
-                excelfn.exportExcel.toExcel(req, res, data, '', cols);
+                if(l > 5000){
+                    excelfn.exportExcel.toExcelMax(req, res, data, '', function(fileSrc){
+                        outSocket.emit('outxls', fileSrc);
+                    });
+                }else{
+                    excelfn.exportExcel.toxlsx(data,'','', function(fileSrc){
+                        outSocket.emit('outxls', fileSrc);
+                    });
+                }
 
             }else{
                 res.send('没有数据!');
@@ -518,7 +528,7 @@
 
         '/addqq' : function(req, res){
             var items  = [];
-            for(var i=100;i<2000;i++){
+            for(var i=10000;i<40000;i++){
                 items.push({
                     qq : 1+i,
                     name : 'test_'+i,
@@ -531,7 +541,7 @@
                 });
             }
 
-            conn.add('blogqq', items, function(r){
+            conn.add('praise', items, function(r){
                 res.send('success');
             });
 
